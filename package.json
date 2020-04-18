@@ -1,7 +1,7 @@
 {
-	"name": "gl",
+	"name": "izo",
 	"version": "1.0.0",
-	"description": "",
+	"description": "Isometric game engine for web",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
@@ -9,8 +9,8 @@
 		"build": "webpack --mode production"
 	},
 	"keywords": [],
-	"author": "",
-	"license": "ISC",
+	"author": "Konrad Chmielecki",
+	"license": "",
 	"devDependencies": {
 		"css-loader": "^3.4.2",
 		"file-loader": "^6.0.0",
