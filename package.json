@@ -2,7 +2,7 @@
 	"name": "izo",
 	"version": "1.0.0",
 	"description": "Isometric game engine in WebGL2",
-	"main": "index.js",
+	"main": "index.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "webpack-dev-server --mode development --open http://localhost:8080 --hot --host 0.0.0.0",

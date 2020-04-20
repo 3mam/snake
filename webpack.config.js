@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
 
 	// webpack will take the files from ./src/index
-	entry: './src/index',
+	entry: './src/index.ts',
 
 	//devtool: 'inline-source-map',
 
@@ -15,13 +15,13 @@ module.exports = {
 
 	// adding .ts and .tsx to resolve.extensions will help babel look for .ts and .tsx files to transpile
 	resolve: {
-		extensions: ['*', '.js', '.jsx', '.tsx', '.ts'],
+		extensions: ['*', '.tsx', '.ts', '.js'],
 	},
 
 	module: {
 		rules: [{
 				// Include ts, tsx, js, and jsx files.
-				test: /\.(js|jsx|tsx|ts)$/,
+				test: /\.tsx?$/,
 				exclude: /node_modules/,
 				loader: ['ts-loader'],
 			},
