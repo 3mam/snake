@@ -19,13 +19,12 @@ module.exports = {
 	},
 
 	module: {
-		rules: [
-			// {
-			// 	// Include ts, tsx, js, and jsx files.
-			// 	test: /\.(js|jsx|tsx|ts)$/,
-			// 	exclude: /node_modules/,
-			// 	loader: ['babel-loader', 'ts-loader'],
-			// },
+		rules: [{
+				// Include ts, tsx, js, and jsx files.
+				test: /\.(js|jsx|tsx|ts)$/,
+				exclude: /node_modules/,
+				loader: ['ts-loader'],
+			},
 			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
 			// {
 			// 	enforce: "pre",
