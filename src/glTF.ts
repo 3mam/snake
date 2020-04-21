@@ -2,22 +2,22 @@ import BinaryReader from './BinaryReader'
 
 type Scenes = {
 	name: string
-	nodes: Array<number>
+	nodes: number[]
 }
 
 type Node = {
 	name: string
-	rotation: Array<number>
-	scale: Array<number>
-	translation: Array<number>
+	rotation: number[]
+	scale: number[]
+	translation: number[]
 }
 
 type Children = {
-	children: Array<number>
+	children: number[]
 	name: string
-	rotation: Array<number>
-	scale: Array<number>
-	translation: Array<number>
+	rotation: number[]
+	scale: number[]
+	translation: number[]
 }
 
 type Materials = {
@@ -28,7 +28,7 @@ type Materials = {
 
 type Skins = {
 	inverseBindMatrices: number
-	joints: Array<number>
+	joints: number[]
 	name: string
 }
 
@@ -36,8 +36,8 @@ type Accessors = {
 	bufferView: number
 	componentType: number
 	count: number
-	max: Array<number>
-	min: Array<number>
+	max: number[]
+	min: number[]
 	type: string
 }
 
@@ -59,16 +59,16 @@ type glTF = {
 	}
 	scene: number
 	scenes: Scenes
-	nodes: Array<Node | Children>
-	materials: Array<Materials>
-	skins: Array<Skins>
-	accessors: Array<Accessors>
-	bufferViews: Array<BufferViews>
-	buffers: Array<Buffers>
+	nodes: Node[] | Children[]
+	materials: Materials[]
+	skins: Skins[]
+	accessors: Accessors[]
+	bufferViews: BufferViews[]
+	buffers: Buffers[]
 }
 
 
-export default async function glbLoad(name: string) {
+export default async function glbLoad(name: string): glTF {
 	const data = await (await (await fetch(name)).blob()).arrayBuffer()
 	const dataStream = new BinaryReader(data)
 
@@ -90,8 +90,7 @@ export default async function glbLoad(name: string) {
 		}
 	}
 
-	const jsonChunk = chunkType(dataStream.readUInt32(), chunkJsonSize)
-
+	const jsonChunk: glTF = chunkType(dataStream.readUInt32(), chunkJsonSize)
 	//n is pointer to object storage in array buffers.
 	jsonChunk.buffers.forEach((n: Buffers) => {
 		const chunkSize = dataStream.readUInt32()
