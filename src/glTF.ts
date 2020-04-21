@@ -52,7 +52,7 @@ type Buffers = {
 	uri: Uint8Array
 }
 
-type glTF = {
+export type glTF = {
 	asset: {
 		generator: string
 		version: string
@@ -68,7 +68,7 @@ type glTF = {
 }
 
 
-export default async function glbLoad(name: string): glTF {
+export async function glbLoad(name: string): Promise<glTF> {
 	const data = await (await (await fetch(name)).blob()).arrayBuffer()
 	const dataStream = new BinaryReader(data)
 
