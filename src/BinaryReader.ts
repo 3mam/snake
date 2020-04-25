@@ -25,4 +25,4 @@ export default class BinaryReader {
 	readString(size: number): string {
 		return new TextDecoder("utf-8").decode(this.readBytes(size))
 	}
-} 
+}
