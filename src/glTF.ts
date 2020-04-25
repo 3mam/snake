@@ -10,14 +10,7 @@ type Node = {
 	rotation: number[]
 	scale: number[]
 	translation: number[]
-}
-
-type Children = {
 	children: number[]
-	name: string
-	rotation: number[]
-	scale: number[]
-	translation: number[]
 }
 
 type Materials = {
@@ -52,6 +45,12 @@ type Buffers = {
 	uri: Uint8Array
 }
 
+type Images = {
+	bufferView: number
+	mimeType: string
+	name: string
+}
+
 export type glTF = {
 	asset: {
 		generator: string
@@ -59,12 +58,13 @@ export type glTF = {
 	}
 	scene: number
 	scenes: Scenes
-	nodes: Node[] | Children[]
+	nodes: Node[]
 	materials: Materials[]
 	skins: Skins[]
 	accessors: Accessors[]
 	bufferViews: BufferViews[]
 	buffers: Buffers[]
+	images: Images[]
 }
 
 
