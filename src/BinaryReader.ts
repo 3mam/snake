@@ -2,8 +2,9 @@ export default class BinaryReader {
 	array: Uint8Array
 	position: number
 
-	constructor(arrayBuffer: ArrayBuffer) {
-		this.array = new Uint8Array(arrayBuffer)
+	constructor(array: ArrayBuffer | Uint8Array) {
+		array instanceof ArrayBuffer && (this.array = new Uint8Array(array))
+		array instanceof Uint8Array && (this.array = array)
 		this.position = 0
 	}
 	read(): number {
@@ -22,6 +23,6 @@ export default class BinaryReader {
 		return byte.reduce((p, c, i) => c << (i * 8) | p)
 	}
 	readString(size: number): string {
-		return String.fromCharCode.apply(String, this.readBytes(size))
+		return new TextDecoder("utf-8").decode(this.readBytes(size))
 	}
-}
+} 
