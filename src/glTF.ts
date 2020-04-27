@@ -51,6 +51,11 @@ type Images = {
 	name: string
 }
 
+type Meshes = {
+	name: string
+	//primitives: 
+}
+
 export type glTF = {
 	asset: {
 		generator: string
