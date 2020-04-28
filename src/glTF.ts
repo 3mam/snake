@@ -7,6 +7,7 @@ type Scenes = {
 
 type Node = {
 	name: string
+	mesh: number
 	rotation: number[]
 	scale: number[]
 	translation: number[]
@@ -51,9 +52,26 @@ type Images = {
 	name: string
 }
 
+type Attributes = {
+	POSITION: number
+	NORMAL: number
+	TANGENT: number
+	TEXCOORD_0: number
+	TEXCOORD_1: number
+	COLOR_0: number
+	JOINTS_0: number
+	WEIGHTS_0: number
+}
+
+type Primitives = {
+	attributes: Attributes
+	indices: number
+	material: number
+}
+
 type Meshes = {
 	name: string
-	//primitives: 
+	primitives: Primitives[]
 }
 
 export type glTF = {
@@ -70,6 +88,7 @@ export type glTF = {
 	bufferViews: BufferViews[]
 	buffers: Buffers[]
 	images: Images[]
+	meshes: Meshes[]
 }
 
 
