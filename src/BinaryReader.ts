@@ -1,11 +1,15 @@
 export default class BinaryReader {
-	array: Uint8Array
-	offset: number
+	private array: Uint8Array
+	private offset: number
 
 	constructor(array: ArrayBuffer | Uint8Array) {
 		array instanceof ArrayBuffer && (this.array = new Uint8Array(array))
 		array instanceof Uint8Array && (this.array = array)
 		this.offset = 0
+	}
+
+	setOffset(offset: number) {
+		this.offset = offset
 	}
 	read(): number {
 		return this.array[this.offset++]
