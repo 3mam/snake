@@ -1,5 +1,7 @@
 export class Matrix4x4 {
 	mat: Float32Array
+	private tmp: Float32Array
+	private tmp2: Float32Array
 	constructor() {
 		this.mat = new Float32Array([
 			1, 0, 0, 0,
@@ -7,66 +9,68 @@ export class Matrix4x4 {
 			0, 0, 1, 0,
 			0, 0, 0, 1,
 		])
+		this.tmp = new Float32Array(16)
+		this.tmp2 = new Float32Array(16)
 	}
 
 	translate(x: number, y: number, z: number) {
-		const tmp = new Float32Array([
+		this.tmp.set([
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
 			x, y, z, 1,
 		])
-		this.mat = (this.multiplyMatrices4x4(this.mat, tmp))
+		this.multiplyMatrices4x4(this.mat, this.tmp)
 	}
 
 	scale(x: number, y: number, z: number) {
-		const tmp = new Float32Array([
+		this.tmp.set([
 			x, 0, 0, 0,
 			0, y, 0, 0,
 			0, 0, z, 0,
 			0, 0, 0, 1,
 		])
-		this.mat = this.multiplyMatrices4x4(this.mat, tmp)
+		this.multiplyMatrices4x4(this.mat, this.tmp)
 	}
 
 	rotateX(z: number) {
 		const cos = Math.cos(z)
 		const sin = -Math.sin(z)
-		const tmp = new Float32Array([
+		this.tmp.set([
 			1, 0, 0, 0,
 			0, cos, -sin, 0,
 			0, sin, cos, 0,
 			0, 0, 0, 1,
 		])
-		this.mat = this.multiplyMatrices4x4(this.mat, tmp)
+		this.multiplyMatrices4x4(this.mat, this.tmp)
 	}
 
 	rotateY(z: number) {
 		const cos = Math.cos(z)
 		const sin = -Math.sin(z)
-		const tmp = new Float32Array([
+		this.tmp.set([
 			cos, 0, -sin, 0,
 			0, 1, 0, 0,
 			sin, 0, cos, 0,
 			0, 0, 0, 1,
 		])
-		this.mat = this.multiplyMatrices4x4(this.mat, tmp)
+		this.multiplyMatrices4x4(this.mat, this.tmp)
 	}
 
 	rotateZ(z: number) {
 		const cos = Math.cos(z)
 		const sin = -Math.sin(z)
-		const tmp = new Float32Array([
+		this.tmp.set([
 			cos, -sin, 0, 0,
 			sin, cos, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1,
 		])
-		this.mat = this.multiplyMatrices4x4(this.mat, tmp)
+		this.multiplyMatrices4x4(this.mat, this.tmp)
 	}
 
 	reset() {
-		this.mat = new Float32Array([
+		this.mat.set([
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
@@ -75,7 +79,7 @@ export class Matrix4x4 {
 	}
 
 	private multiplyMatrices4x4(dst: Float32Array, src: Float32Array) {
-		return new Float32Array([
+		this.tmp2.set([
 			src[0] * dst[0] + src[1] * dst[4] + src[2] * dst[8] + src[3] * dst[12],
 			src[0] * dst[1] + src[1] * dst[5] + src[2] * dst[9] + src[3] * dst[13],
 			src[0] * dst[2] + src[1] * dst[6] + src[2] * dst[10] + src[3] * dst[14],
@@ -93,5 +97,6 @@ export class Matrix4x4 {
 			src[12] * dst[2] + src[13] * dst[6] + src[14] * dst[10] + src[15] * dst[14],
 			src[12] * dst[3] + src[13] * dst[7] + src[14] * dst[11] + src[15] * dst[15],
 		])
+		this.mat.set(this.tmp2)
 	}
 }
