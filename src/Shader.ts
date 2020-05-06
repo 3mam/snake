@@ -1,3 +1,5 @@
+import { Matrix4x4 } from "./Matrix"
+
 function createShader(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader {
 	const shader = gl.createShader(type)
 	gl.shaderSource(shader, source)
@@ -101,8 +103,24 @@ export class Shader {
 		this.varList.get(name).variable = variable
 	}
 
-	get(name: string): any {
-		return this.varList.get(name).variable
+	setColor(rgba: Float32Array) {
+		this.varList.get('COLOR').variable = rgba
+	}
+
+	setMatrix(mat: Matrix4x4) {
+		this.varList.get('MATRIX').variable = mat
+	}
+
+	setUV(id: WebGLBuffer) {
+		this.varList.get('inUV').variable = id
+	}
+
+	setVertex(id: WebGLBuffer) {
+		this.varList.get('VERTEX').variable = id
+	}
+
+	setTexture(id: WebGLUniformLocation) {
+		this.varList.get('TEXTURE').variable = id
 	}
 
 	update(): void {
