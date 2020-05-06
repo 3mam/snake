@@ -123,7 +123,7 @@ export class Shader {
 		this.varList.get('TEXTURE').variable = id
 	}
 
-	update(): void {
+	update() {
 		this.gl.useProgram(this.program)
 		this.varList.forEach((v) => {
 			switch (v.type) {
