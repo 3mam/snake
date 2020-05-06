@@ -1,5 +1,5 @@
 export class Matrix4x4 {
-	mat: Float32Array
+	private mat: Float32Array
 	private tmp: Float32Array
 	constructor() {
 		this.mat = new Float32Array([
@@ -74,6 +74,10 @@ export class Matrix4x4 {
 			0, 0, 1, 0,
 			0, 0, 0, 1,
 		])
+	}
+
+	get() {
+		return this.mat
 	}
 
 	private multiplyMatrices4x4(dst: Float32Array, src: Float32Array) {
