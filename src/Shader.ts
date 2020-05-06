@@ -27,6 +27,7 @@ enum Type {
 	Vertex,
 	Uniform,
 	Texture,
+	Matrix,
 	UV,
 	Mat4,
 	Float,
@@ -75,7 +76,7 @@ export class Shader {
 		this.varList = new Map()
 		this.varList.set('VERTEX', { type: Type.Vertex, handle: null, variable: null })
 		this.varList.set('inUV', { type: Type.UV, handle: null, variable: null })
-		this.varList.set('MATRIX', { type: Type.Mat4, handle: null, variable: null })
+		this.varList.set('MATRIX', { type: Type.Matrix, handle: null, variable: null })
 		this.varList.set('TEXTURE', { type: Type.Texture, handle: null, variable: null })
 		this.varList.set('COLOR', { type: Type.Vec4, handle: null, variable: null })
 
@@ -86,6 +87,7 @@ export class Shader {
 					v.handle = this.gl.getAttribLocation(this.program, k)
 					break
 				case Type.Texture:
+				case Type.Matrix:
 				case Type.Mat4:
 				case Type.Vec4:
 				case Type.Float:
@@ -121,8 +123,9 @@ export class Shader {
 					this.gl.bindTexture(this.gl.TEXTURE_2D, v.variable)
 					this.gl.uniform1i(v.handle, 0)
 					break
-				case Type.Mat4:
-					this.gl.uniformMatrix4fv(v.handle, false, v.variable)
+				case Type.Matrix:
+					this.gl.uniformMatrix4fv(v.handle, false, v.variable.get())
+					v.variable.reset()
 					break
 				case Type.Vec4:
 					this.gl.uniform4fv(v.handle, v.variable)
