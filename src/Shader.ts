@@ -99,7 +99,7 @@ export class Shader {
 		})
 	}
 
-	set(name: string, variable: any): void {
+	set(name: string, variable: any) {
 		this.varList.get(name).variable = variable
 	}
 
