@@ -1,11 +1,11 @@
 import BinaryReader from './BinaryReader'
 
-type Scenes = {
+export type Scenes = {
 	name: string
 	nodes: number[]
 }
 
-type Node = {
+export type Node = {
 	name: string
 	mesh: number
 	rotation: number[]
@@ -14,19 +14,19 @@ type Node = {
 	children: number[]
 }
 
-type Materials = {
+export type Materials = {
 	doubleSided: boolean
 	name: string
 	pbrMetallicRoughness: object
 }
 
-type Skins = {
+export type Skins = {
 	inverseBindMatrices: number
 	joints: number[]
 	name: string
 }
 
-type Accessors = {
+export type Accessors = {
 	bufferView: number
 	componentType: number
 	count: number
@@ -35,24 +35,24 @@ type Accessors = {
 	type: string
 }
 
-type BufferViews = {
+export type BufferViews = {
 	buffer: number
 	byteLength: number
 	byteOffset: number
 }
 
-type Buffers = {
+export type Buffers = {
 	byteLength: number
 	uri: Uint8Array
 }
 
-type Images = {
+export type Images = {
 	bufferView: number
 	mimeType: string
 	name: string
 }
 
-type Attributes = {
+export type Attributes = {
 	POSITION: number
 	NORMAL: number
 	TANGENT: number
@@ -63,13 +63,13 @@ type Attributes = {
 	WEIGHTS_0: number
 }
 
-type Primitives = {
+export type Primitives = {
 	attributes: Attributes
 	indices: number
 	material: number
 }
 
-type Meshes = {
+export type Meshes = {
 	name: string
 	primitives: Primitives[]
 }
@@ -120,6 +120,6 @@ export async function glbLoad(name: string): Promise<glTF> {
 		const chunkSize = dataStream.readUInt32()
 		n.uri = chunkType(dataStream.readUInt32(), chunkSize)
 	})
-	console.log(jsonChunk)
+	console.log({ jsonChunk })
 	return jsonChunk
 }
