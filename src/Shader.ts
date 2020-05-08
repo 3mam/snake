@@ -1,29 +1,5 @@
-import { Matrix4x4 } from "./Matrix"
-
-function createShader(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader {
-	const shader = gl.createShader(type)
-	gl.shaderSource(shader, source)
-	gl.compileShader(shader)
-	const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS)
-	if (success) {
-		return shader
-	}
-	console.log(gl.getShaderInfoLog(shader))
-	gl.deleteShader(shader)
-}
-
-function createProgram(gl: WebGL2RenderingContext, vertexShader: WebGLShader, fragmentShader: WebGLShader): WebGLProgram {
-	const program = gl.createProgram()
-	gl.attachShader(program, vertexShader)
-	gl.attachShader(program, fragmentShader)
-	gl.linkProgram(program)
-	const success = gl.getProgramParameter(program, gl.LINK_STATUS)
-	if (success) {
-		return program
-	}
-	console.log(gl.getProgramInfoLog(program))
-	gl.deleteProgram(program)
-}
+import { Matrix4x4 } from './Matrix'
+import { gl, createShader, createProgram } from './gl'
 
 enum Type {
 	Vertex,
@@ -45,10 +21,10 @@ type ShaderVar = {
 export class Shader {
 	private program: WebGLProgram
 	private varList: Map<string, ShaderVar>
-	private gl: WebGL2RenderingContext
 
-	constructor(gl: WebGL2RenderingContext) {
-		this.gl = gl
+
+	constructor() {
+
 		const vertexShaderSource = `#version 300 es
 		in vec4 VERTEX;
 		in vec2 inUV;
@@ -72,9 +48,9 @@ export class Shader {
 		}
 		`
 
-		const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource)
-		const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource)
-		this.program = createProgram(gl, vertexShader, fragmentShader)
+		const vertexShader = createShader(gl.VERTEX_SHADER, vertexShaderSource)
+		const fragmentShader = createShader(gl.FRAGMENT_SHADER, fragmentShaderSource)
+		this.program = createProgram(vertexShader, fragmentShader)
 		this.varList = new Map()
 		this.varList.set('VERTEX', { type: Type.Vertex, handle: null, variable: null })
 		this.varList.set('inUV', { type: Type.UV, handle: null, variable: null })
@@ -86,14 +62,14 @@ export class Shader {
 			switch (v.type) {
 				case Type.Vertex:
 				case Type.UV:
-					v.handle = this.gl.getAttribLocation(this.program, k)
+					v.handle = gl.getAttribLocation(this.program, k)
 					break
 				case Type.Texture:
 				case Type.Matrix:
 				case Type.Mat4:
 				case Type.Vec4:
 				case Type.Float:
-					v.handle = this.gl.getUniformLocation(this.program, k)
+					v.handle = gl.getUniformLocation(this.program, k)
 					break
 			}
 		})
@@ -124,32 +100,32 @@ export class Shader {
 	}
 
 	update() {
-		this.gl.useProgram(this.program)
+		gl.useProgram(this.program)
 		this.varList.forEach((v) => {
 			switch (v.type) {
 				case Type.Vertex:
-					this.gl.bindBuffer(this.gl.ARRAY_BUFFER, v.variable)
-					this.gl.enableVertexAttribArray(<number>v.handle)
-					this.gl.vertexAttribPointer(<number>v.handle, 3, this.gl.FLOAT, false, 0, 0)
+					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable)
+					gl.enableVertexAttribArray(<number>v.handle)
+					gl.vertexAttribPointer(<number>v.handle, 3, gl.FLOAT, false, 0, 0)
 					break
 				case Type.UV:
-					this.gl.bindBuffer(this.gl.ARRAY_BUFFER, v.variable)
-					this.gl.enableVertexAttribArray(<number>v.handle)
-					this.gl.vertexAttribPointer(<number>v.handle, 2, this.gl.FLOAT, false, 0, 0)
+					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable)
+					gl.enableVertexAttribArray(<number>v.handle)
+					gl.vertexAttribPointer(<number>v.handle, 2, gl.FLOAT, false, 0, 0)
 					break
 				case Type.Texture:
-					this.gl.bindTexture(this.gl.TEXTURE_2D, v.variable)
-					this.gl.uniform1i(v.handle, 0)
+					gl.bindTexture(gl.TEXTURE_2D, v.variable)
+					gl.uniform1i(v.handle, 0)
 					break
 				case Type.Matrix:
-					this.gl.uniformMatrix4fv(v.handle, false, v.variable.get())
+					gl.uniformMatrix4fv(v.handle, false, v.variable.get())
 					v.variable.reset()
 					break
 				case Type.Vec4:
-					this.gl.uniform4fv(v.handle, v.variable)
+					gl.uniform4fv(v.handle, v.variable)
 					break
 				case Type.Float:
-					this.gl.uniform1f(v.handle, v.variable)
+					gl.uniform1f(v.handle, v.variable)
 					break
 			}
 		})
