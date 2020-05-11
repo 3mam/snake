@@ -1,4 +1,4 @@
-import BinaryReader from './BinaryReader'
+import { BinaryReader } from './BinaryReader'
 
 export type Scenes = {
 	name: string
@@ -120,6 +120,5 @@ export async function glbLoad(name: string): Promise<glTF> {
 		const chunkSize = dataStream.readUInt32()
 		n.uri = chunkType(dataStream.readUInt32(), chunkSize)
 	})
-	console.log({ jsonChunk })
 	return jsonChunk
 }
