@@ -18,7 +18,7 @@ type ShaderVar = {
 	variable: any
 }
 
-type Color = {
+export type Color = {
 	r: number
 	g: number
 	b: number
