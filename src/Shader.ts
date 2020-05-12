@@ -18,10 +18,16 @@ type ShaderVar = {
 	variable: any
 }
 
+type Color = {
+	r: number
+	g: number
+	b: number
+	a: number
+}
+
 export class Shader {
 	private program: WebGLProgram
 	private varList: Map<string, ShaderVar>
-
 
 	constructor() {
 
@@ -79,8 +85,8 @@ export class Shader {
 		this.varList.get(name).variable = variable
 	}
 
-	setColor(rgba: Float32Array) {
-		this.varList.get('COLOR').variable = rgba
+	setColor(color: Color) {
+		this.varList.get('COLOR').variable = [color.r, color.g, color.b, color.a]
 	}
 
 	setMatrix(mat: Matrix4x4) {
