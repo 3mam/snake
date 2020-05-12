@@ -1,15 +1,18 @@
 import { gl } from './gl'
 import { Shader } from './Shader'
+import { glbLoad } from './glTF'
+import { BinaryReader } from './BinaryReader'
+import { Matrix4x4 } from './Matrix'
 
-class ObjectModel {
+export class ObjectModel {
+	texture: WebGLTexture
+	uv: WebGLBuffer
+	vertex: {
+		id: WebGLBuffer
+		count: number
+	}
+	shader: Shader
 	position: {
-		texture: WebGLTexture
-		uv: WebGLBuffer
-		vertex: {
-			id: WebGLBuffer
-			count: number
-		}
-		shader: Shader
 		translation: {
 			x: number
 			y: number
@@ -28,5 +31,11 @@ class ObjectModel {
 	}
 
 	constructor() {
+	}
+
+	render() {
+		this.shader.update()
+		gl.bindTexture(gl.TEXTURE_2D, this.texture)
+		gl.drawArrays(gl.TRIANGLES, 0, this.vertex.count)
 	}
 }
