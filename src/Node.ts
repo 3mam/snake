@@ -64,7 +64,6 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
-		console.log(image)
 	}
 	file.nodes.forEach((v, i) => {
 		const obj = new Node()
