@@ -13,7 +13,8 @@ export class Node {
 	}
 	shader: Shader
 	color: Color
-	view: Matrix4x4
+	viewport: Matrix4x4
+	camera: Matrix4x4
 	position: {
 		translation: {
 			x: number
@@ -37,7 +38,8 @@ export class Node {
 
 	render() {
 		this.shader.setTexture(this.texture)
-		this.shader.setMatrix(this.view)
+		this.shader.setViewport(this.viewport)
+		this.shader.setCamera(this.camera)
 		this.shader.setColor(this.color)
 		this.shader.setVertex(this.vertex.id)
 		this.shader.setUV(this.uv)
@@ -67,10 +69,11 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 	}
 	file.nodes.forEach((v, i) => {
 		const obj = new Node()
-		obj.view = new Matrix4x4()
+		obj.viewport = new Matrix4x4()
 		obj.color = { r: 1, g: 1, b: 1, a: 1 }
 		obj.shader = shader
-		obj.shader.setMatrix(obj.view)
+		obj.shader.setViewport(obj.viewport)
+		obj.shader.setCamera(obj.viewport)
 		obj.shader.setColor(obj.color)
 
 		obj.texture = texture

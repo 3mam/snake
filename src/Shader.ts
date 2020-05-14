@@ -35,11 +35,12 @@ export class Shader {
 		in vec4 VERTEX;
 		in vec2 inUV;
 		out vec2 UV;
-		uniform mat4 MATRIX;
+		uniform mat4 VIEWPORT;
+		uniform mat4 CAMERA;
 		
 		void main() {
 			UV = inUV;
-			gl_Position = MATRIX * VERTEX;
+			gl_Position = CAMERA * VIEWPORT * VERTEX;
 		}
 		`
 
@@ -60,7 +61,8 @@ export class Shader {
 		this.varList = new Map()
 		this.varList.set('VERTEX', { type: Type.Vertex, handle: null, variable: null })
 		this.varList.set('inUV', { type: Type.UV, handle: null, variable: null })
-		this.varList.set('MATRIX', { type: Type.Matrix, handle: null, variable: null })
+		this.varList.set('VIEWPORT', { type: Type.Matrix, handle: null, variable: null })
+		this.varList.set('CAMERA', { type: Type.Matrix, handle: null, variable: null })
 		this.varList.set('TEXTURE', { type: Type.Texture, handle: null, variable: null })
 		this.varList.set('COLOR', { type: Type.Vec4, handle: null, variable: null })
 
@@ -89,8 +91,12 @@ export class Shader {
 		this.varList.get('COLOR').variable = [color.r, color.g, color.b, color.a]
 	}
 
-	setMatrix(mat: Matrix4x4) {
-		this.varList.get('MATRIX').variable = mat
+	setViewport(mat: Matrix4x4) {
+		this.varList.get('VIEWPORT').variable = mat
+	}
+
+	setCamera(mat: Matrix4x4) {
+		this.varList.get('CAMERA').variable = mat
 	}
 
 	setUV(id: WebGLBuffer) {
