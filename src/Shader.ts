@@ -1,5 +1,6 @@
 import { Matrix4x4 } from './Matrix'
 import { gl, createShader, createProgram } from './gl'
+import { currentCamera, Camera } from './Camera'
 
 enum Type {
 	Vertex,
@@ -10,6 +11,7 @@ enum Type {
 	Mat4,
 	Float,
 	Vec4,
+	Camera,
 }
 
 type ShaderVar = {
@@ -62,7 +64,7 @@ export class Shader {
 		this.varList.set('VERTEX', { type: Type.Vertex, handle: null, variable: null })
 		this.varList.set('inUV', { type: Type.UV, handle: null, variable: null })
 		this.varList.set('VIEWPORT', { type: Type.Matrix, handle: null, variable: null })
-		this.varList.set('CAMERA', { type: Type.Matrix, handle: null, variable: null })
+		this.varList.set('CAMERA', { type: Type.Camera, handle: null, variable: null })
 		this.varList.set('TEXTURE', { type: Type.Texture, handle: null, variable: null })
 		this.varList.set('COLOR', { type: Type.Vec4, handle: null, variable: null })
 
@@ -77,6 +79,7 @@ export class Shader {
 				case Type.Mat4:
 				case Type.Vec4:
 				case Type.Float:
+				case Type.Camera:
 					v.handle = gl.getUniformLocation(this.program, k)
 					break
 			}
@@ -95,8 +98,8 @@ export class Shader {
 		this.varList.get('VIEWPORT').variable = mat
 	}
 
-	setCamera(mat: Matrix4x4) {
-		this.varList.get('CAMERA').variable = mat
+	setCamera(cam: Camera) {
+		this.varList.get('CAMERA').variable = cam
 	}
 
 	setUV(id: WebGLBuffer) {
@@ -128,6 +131,14 @@ export class Shader {
 				case Type.Texture:
 					gl.bindTexture(gl.TEXTURE_2D, v.variable)
 					gl.uniform1i(v.handle, 0)
+					break
+				case Type.Camera:
+					v.variable.matrix.translate(v.variable.position.x, v.variable.position.y, v.variable.position.z)
+					v.variable.matrix.rotateX(v.variable.rotation.x)
+					v.variable.matrix.rotateY(v.variable.rotation.y)
+					v.variable.matrix.rotateZ(v.variable.rotation.z)
+					gl.uniformMatrix4fv(v.handle, false, v.variable.matrix.get())
+					v.variable.matrix.reset()
 					break
 				case Type.Matrix:
 					gl.uniformMatrix4fv(v.handle, false, v.variable.get())
