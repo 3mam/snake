@@ -3,6 +3,7 @@ import { Shader, Color } from './Shader'
 import { glbLoad } from './glTF'
 import { BinaryReader } from './BinaryReader'
 import { Matrix4x4 } from './Matrix'
+import { currentCamera } from './Camera'
 
 export class Node {
 	texture: WebGLTexture
@@ -14,7 +15,6 @@ export class Node {
 	shader: Shader
 	color: Color
 	viewport: Matrix4x4
-	camera: Matrix4x4
 	position: {
 		translation: {
 			x: number
@@ -39,7 +39,7 @@ export class Node {
 	render() {
 		this.shader.setTexture(this.texture)
 		this.shader.setViewport(this.viewport)
-		this.shader.setCamera(this.camera)
+		this.shader.setCamera(currentCamera)
 		this.shader.setColor(this.color)
 		this.shader.setVertex(this.vertex.id)
 		this.shader.setUV(this.uv)
@@ -73,7 +73,6 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 		obj.color = { r: 1, g: 1, b: 1, a: 1 }
 		obj.shader = shader
 		obj.shader.setViewport(obj.viewport)
-		obj.shader.setCamera(obj.viewport)
 		obj.shader.setColor(obj.color)
 
 		obj.texture = texture
