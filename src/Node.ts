@@ -1,17 +1,13 @@
 import { gl } from './gl'
-import { Shader, Color } from './Shader'
+import { Shader, Color, BufferData } from './Shader'
 import { gltfLoad } from './glTF'
-import { BinaryReader } from './BinaryReader'
 import { Matrix4x4 } from './Matrix'
 import { currentCamera } from './Camera'
 
 export class Node {
 	texture: WebGLTexture
-	uv: WebGLBuffer
-	vertex: {
-		id: WebGLBuffer
-		count: number
-	}
+	vertex: BufferData
+	uv: BufferData
 	shader: Shader
 	color: Color
 	viewport: Matrix4x4
@@ -41,7 +37,7 @@ export class Node {
 		this.shader.setViewport(this.viewport)
 		this.shader.setCamera(currentCamera)
 		this.shader.setColor(this.color)
-		this.shader.setVertex(this.vertex.id)
+		this.shader.setVertex(this.vertex)
 		this.shader.setUV(this.uv)
 		this.shader.update()
 		gl.drawArrays(gl.TRIANGLES, 0, this.vertex.count)
@@ -50,7 +46,6 @@ export class Node {
 
 export async function loadNode(name: string): Promise<Map<string, Node>> {
 	const file = await gltfLoad(name)
-	console.log(file)
 	const nodes: Map<string, Node> = new Map()
 	const shader = new Shader()
 	const texture = gl.createTexture()
@@ -73,6 +68,9 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 
 	const blob = await (await (await fetch(dir + file.buffers[0].uri)).blob()).arrayBuffer()
 	const model = new Uint8Array(blob)
+	const buffer = gl.createBuffer()
+	gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+	gl.bufferData(gl.ARRAY_BUFFER, model, gl.STATIC_DRAW)
 
 	file.nodes.forEach((v, i) => {
 		const obj = new Node()
@@ -108,20 +106,19 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 		const texcoordBufferView = file.accessors[texcoord].bufferView
 
 		obj.vertex = {
+			id: buffer,
 			count: file.accessors[position].count,
-			id: gl.createBuffer()
+			offset: file.bufferViews[positionBufferView].byteOffset,
+			size: file.bufferViews[positionBufferView].byteLength,
 		}
-		obj.shader.setVertex(obj.vertex.id)
-		gl.bindBuffer(gl.ARRAY_BUFFER, obj.vertex.id)
-		gl.bufferData(gl.ARRAY_BUFFER, model, gl.STATIC_DRAW,
-			file.bufferViews[positionBufferView].byteOffset,
-			file.bufferViews[positionBufferView].byteLength)
-		obj.uv = gl.createBuffer()
+		obj.uv = {
+			id: buffer,
+			count: file.accessors[texcoord].count,
+			offset: file.bufferViews[texcoordBufferView].byteOffset,
+			size: file.bufferViews[texcoordBufferView].byteLength,
+		}
+		obj.shader.setVertex(obj.vertex)
 		obj.shader.setUV(obj.uv)
-		gl.bindBuffer(gl.ARRAY_BUFFER, obj.uv)
-		gl.bufferData(gl.ARRAY_BUFFER, model, gl.STATIC_DRAW,
-			file.bufferViews[texcoordBufferView].byteOffset,
-			file.bufferViews[texcoordBufferView].byteLength)
 
 		nodes.set(v.name, obj)
 

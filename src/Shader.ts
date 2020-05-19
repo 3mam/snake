@@ -27,6 +27,13 @@ export type Color = {
 	a: number
 }
 
+export type BufferData = {
+	id: WebGLBuffer
+	count: number
+	offset: number
+	size: number
+}
+
 export class Shader {
 	private program: WebGLProgram
 	private varList: Map<string, ShaderVar>
@@ -102,12 +109,12 @@ export class Shader {
 		this.varList.get('CAMERA').variable = cam
 	}
 
-	setUV(id: WebGLBuffer) {
-		this.varList.get('inUV').variable = id
+	setUV(buffer: BufferData) {
+		this.varList.get('inUV').variable = buffer
 	}
 
-	setVertex(id: WebGLBuffer) {
-		this.varList.get('VERTEX').variable = id
+	setVertex(buffer: BufferData) {
+		this.varList.get('VERTEX').variable = buffer
 	}
 
 	setTexture(id: WebGLUniformLocation) {
@@ -119,14 +126,14 @@ export class Shader {
 		this.varList.forEach((v) => {
 			switch (v.type) {
 				case Type.Vertex:
-					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable)
+					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable.id)
 					gl.enableVertexAttribArray(<number>v.handle)
-					gl.vertexAttribPointer(<number>v.handle, 3, gl.FLOAT, false, 0, 0)
+					gl.vertexAttribPointer(<number>v.handle, 3, gl.FLOAT, false, 0, v.variable.offset)
 					break
 				case Type.UV:
-					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable)
+					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable.id)
 					gl.enableVertexAttribArray(<number>v.handle)
-					gl.vertexAttribPointer(<number>v.handle, 2, gl.FLOAT, false, 0, 0)
+					gl.vertexAttribPointer(<number>v.handle, 2, gl.FLOAT, false, 0, v.variable.offset)
 					break
 				case Type.Texture:
 					gl.bindTexture(gl.TEXTURE_2D, v.variable)
@@ -137,6 +144,7 @@ export class Shader {
 					v.variable.matrix.rotateX(v.variable.rotation.x)
 					v.variable.matrix.rotateY(v.variable.rotation.y)
 					v.variable.matrix.rotateZ(v.variable.rotation.z)
+					v.variable.matrix.scale(v.variable.scale.x, v.variable.scale.y, v.variable.scale.z)
 					gl.uniformMatrix4fv(v.handle, false, v.variable.matrix.get())
 					v.variable.matrix.reset()
 					break
