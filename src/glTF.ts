@@ -50,6 +50,7 @@ export type Images = {
 	bufferView: number
 	mimeType: string
 	name: string
+	uri: string
 }
 
 export type Attributes = {
@@ -121,4 +122,9 @@ export async function glbLoad(name: string): Promise<glTF> {
 		n.uri = chunkType(dataStream.readUInt32(), chunkSize)
 	})
 	return jsonChunk
+}
+
+export async function gltfLoad(name: string): Promise<glTF> {
+	const data = await (await fetch(name)).json()
+	return <glTF>data
 }
