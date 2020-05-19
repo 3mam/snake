@@ -1,6 +1,6 @@
 import { gl } from './gl'
 import { Shader, Color } from './Shader'
-import { glbLoad } from './glTF'
+import { gltfLoad } from './glTF'
 import { BinaryReader } from './BinaryReader'
 import { Matrix4x4 } from './Matrix'
 import { currentCamera } from './Camera'
@@ -49,16 +49,19 @@ export class Node {
 }
 
 export async function loadNode(name: string): Promise<Map<string, Node>> {
-	const file = await glbLoad(name)
+	const file = await gltfLoad(name)
+	console.log(file)
 	const nodes: Map<string, Node> = new Map()
 	const shader = new Shader()
 	const texture = gl.createTexture()
+	const splitName = name.split(/(\/|\\)/)
+	const tmpDir = splitName.reduce((p, c, i, a) => i !== a.length - 1 ? p + c : p)
+	const dir = tmpDir === name ? '' : tmpDir
+
 	shader.setTexture(texture)
-	const binary = new BinaryReader(file.buffers[0].uri)
-	binary.setOffset(file.bufferViews[file.images[0].bufferView].byteOffset)
-	const blob = new Blob([binary.readBytes(file.bufferViews[file.images[0].bufferView].byteLength)], { type: file.images[0].mimeType })
+
 	const image = new Image()
-	image.src = URL.createObjectURL(blob)
+	image.src = dir + file.images[0].uri
 	image.onload = () => {
 		gl.bindTexture(gl.TEXTURE_2D, texture)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
@@ -67,6 +70,10 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
 	}
+
+	const blob = await (await (await fetch(dir + file.buffers[0].uri)).blob()).arrayBuffer()
+	const model = new Uint8Array(blob)
+
 	file.nodes.forEach((v, i) => {
 		const obj = new Node()
 		obj.viewport = new Matrix4x4()
@@ -106,13 +113,13 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 		}
 		obj.shader.setVertex(obj.vertex.id)
 		gl.bindBuffer(gl.ARRAY_BUFFER, obj.vertex.id)
-		gl.bufferData(gl.ARRAY_BUFFER, file.buffers[0].uri, gl.STATIC_DRAW,
+		gl.bufferData(gl.ARRAY_BUFFER, model, gl.STATIC_DRAW,
 			file.bufferViews[positionBufferView].byteOffset,
 			file.bufferViews[positionBufferView].byteLength)
 		obj.uv = gl.createBuffer()
 		obj.shader.setUV(obj.uv)
 		gl.bindBuffer(gl.ARRAY_BUFFER, obj.uv)
-		gl.bufferData(gl.ARRAY_BUFFER, file.buffers[0].uri, gl.STATIC_DRAW,
+		gl.bufferData(gl.ARRAY_BUFFER, model, gl.STATIC_DRAW,
 			file.bufferViews[texcoordBufferView].byteOffset,
 			file.bufferViews[texcoordBufferView].byteLength)
 
