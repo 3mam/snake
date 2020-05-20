@@ -1,5 +1,5 @@
 import { gl } from './gl'
-import { Shader, Color, BufferData } from './Shader'
+import { Shader, Color, BufferData, Vec3 } from './Shader'
 import { gltfLoad } from './glTF'
 import { Matrix4x4 } from './Matrix'
 import { currentCamera } from './Camera'
@@ -8,6 +8,7 @@ export class Node {
 	texture: WebGLTexture
 	vertex: BufferData
 	uv: BufferData
+	instance: BufferData
 	shader: Shader
 	color: Color
 	viewport: Matrix4x4
@@ -32,6 +33,22 @@ export class Node {
 	constructor() {
 	}
 
+	createInstance(positions: Array<Vec3>) {
+		const data = new Float32Array(positions.length * 3)
+		for (let i = 0, j = 0; i < positions.length; i++) {
+			const vec3 = positions[i]
+			data[j] = vec3.x
+			data[j + 1] = vec3.y
+			data[j + 2] = vec3.z
+			j += 3
+		}
+
+		this.instance.count = positions.length
+		this.instance.id = gl.createBuffer()
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.instance.id)
+		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
+	}
+
 	render() {
 		this.shader.setTexture(this.texture)
 		this.shader.setViewport(this.viewport)
@@ -39,8 +56,9 @@ export class Node {
 		this.shader.setColor(this.color)
 		this.shader.setVertex(this.vertex)
 		this.shader.setUV(this.uv)
+		this.shader.setInstance(this.instance)
 		this.shader.update()
-		gl.drawArrays(gl.TRIANGLES, 0, this.vertex.count)
+		gl.drawArraysInstanced(gl.TRIANGLES, 0, this.vertex.count, this.instance.count)
 	}
 }
 
@@ -116,6 +134,12 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 			count: file.accessors[texcoord].count,
 			offset: file.bufferViews[texcoordBufferView].byteOffset,
 			size: file.bufferViews[texcoordBufferView].byteLength,
+		}
+		obj.instance = {
+			id: null,
+			count: 1,
+			offset: 0,
+			size: 0,
 		}
 		obj.shader.setVertex(obj.vertex)
 		obj.shader.setUV(obj.uv)

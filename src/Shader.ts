@@ -4,6 +4,7 @@ import { currentCamera, Camera } from './Camera'
 
 enum Type {
 	Vertex,
+	Instance,
 	Uniform,
 	Texture,
 	Matrix,
@@ -18,6 +19,12 @@ type ShaderVar = {
 	handle: number | WebGLUniformLocation
 	type: Type
 	variable: any
+}
+
+export type Vec3 = {
+	x: number
+	y: number
+	z: number
 }
 
 export type Color = {
@@ -42,14 +49,17 @@ export class Shader {
 
 		const vertexShaderSource = `#version 300 es
 		in vec4 VERTEX;
+		in vec3 INSTANCE;
 		in vec2 inUV;
 		out vec2 UV;
 		uniform mat4 VIEWPORT;
 		uniform mat4 CAMERA;
 		
 		void main() {
+			vec4 vertex = VERTEX;
+			vertex.xyz += INSTANCE;
 			UV = inUV;
-			gl_Position = CAMERA * VIEWPORT * VERTEX;
+			gl_Position = CAMERA * VIEWPORT * vertex;
 		}
 		`
 
@@ -69,6 +79,7 @@ export class Shader {
 		this.program = createProgram(vertexShader, fragmentShader)
 		this.varList = new Map()
 		this.varList.set('VERTEX', { type: Type.Vertex, handle: null, variable: null })
+		this.varList.set('INSTANCE', { type: Type.Instance, handle: null, variable: null })
 		this.varList.set('inUV', { type: Type.UV, handle: null, variable: null })
 		this.varList.set('VIEWPORT', { type: Type.Matrix, handle: null, variable: null })
 		this.varList.set('CAMERA', { type: Type.Camera, handle: null, variable: null })
@@ -79,6 +90,7 @@ export class Shader {
 			switch (v.type) {
 				case Type.Vertex:
 				case Type.UV:
+				case Type.Instance:
 					v.handle = gl.getAttribLocation(this.program, k)
 					break
 				case Type.Texture:
@@ -121,6 +133,10 @@ export class Shader {
 		this.varList.get('TEXTURE').variable = id
 	}
 
+	setInstance(buffer: BufferData) {
+		this.varList.get('INSTANCE').variable = buffer
+	}
+
 	update() {
 		gl.useProgram(this.program)
 		this.varList.forEach((v) => {
@@ -128,12 +144,12 @@ export class Shader {
 				case Type.Vertex:
 					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable.id)
 					gl.enableVertexAttribArray(<number>v.handle)
-					gl.vertexAttribPointer(<number>v.handle, 3, gl.FLOAT, false, 0, v.variable.offset)
+					gl.vertexAttribPointer(<number>v.handle, 3, gl.FLOAT, false, 12, v.variable.offset)
 					break
 				case Type.UV:
 					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable.id)
 					gl.enableVertexAttribArray(<number>v.handle)
-					gl.vertexAttribPointer(<number>v.handle, 2, gl.FLOAT, false, 0, v.variable.offset)
+					gl.vertexAttribPointer(<number>v.handle, 2, gl.FLOAT, false, 8, v.variable.offset)
 					break
 				case Type.Texture:
 					gl.bindTexture(gl.TEXTURE_2D, v.variable)
@@ -157,6 +173,13 @@ export class Shader {
 					break
 				case Type.Float:
 					gl.uniform1f(v.handle, v.variable)
+					break
+				case Type.Instance:
+					if (v.variable.id === null) break
+					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable.id)
+					gl.enableVertexAttribArray(<number>v.handle)
+					gl.vertexAttribPointer(<number>v.handle, 3, gl.FLOAT, false, 12, 0)
+					gl.vertexAttribDivisor(<number>v.handle, 1)
 					break
 			}
 		})
