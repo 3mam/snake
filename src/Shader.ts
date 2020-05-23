@@ -49,17 +49,15 @@ export class Shader {
 
 		const vertexShaderSource = `#version 300 es
 		in vec4 VERTEX;
-		in vec3 INSTANCE;
+		in mat4 INSTANCE;
 		in vec2 inUV;
 		out vec2 UV;
 		uniform mat4 VIEWPORT;
 		uniform mat4 CAMERA;
 		
 		void main() {
-			vec4 vertex = VERTEX;
-			vertex.xyz += INSTANCE;
 			UV = inUV;
-			gl_Position = CAMERA * VIEWPORT * vertex;
+			gl_Position = CAMERA * VIEWPORT * INSTANCE * VERTEX;
 		}
 		`
 
@@ -177,9 +175,13 @@ export class Shader {
 				case Type.Instance:
 					if (v.variable.id === null) break
 					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable.id)
-					gl.enableVertexAttribArray(<number>v.handle)
-					gl.vertexAttribPointer(<number>v.handle, 3, gl.FLOAT, false, 12, 0)
-					gl.vertexAttribDivisor(<number>v.handle, 1)
+					for (let i = 0; i < 4; i++) {
+						const loc = <number>v.handle + i
+						const offset = i * 16
+						gl.enableVertexAttribArray(loc)
+						gl.vertexAttribPointer(loc, 4, gl.FLOAT, false, 64, offset)
+						gl.vertexAttribDivisor(loc, 1)
+					}
 					break
 			}
 		})

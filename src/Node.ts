@@ -33,17 +33,15 @@ export class Node {
 	constructor() {
 	}
 
-	createInstance(positions: Array<Vec3>) {
-		const data = new Float32Array(positions.length * 3)
-		for (let i = 0, j = 0; i < positions.length; i++) {
-			const vec3 = positions[i]
-			data[j] = vec3.x
-			data[j + 1] = vec3.y
-			data[j + 2] = vec3.z
-			j += 3
-		}
+	createInstance(mat4: Array<Matrix4x4>) {
+		const data = new Float32Array(mat4.length * 16)
 
-		this.instance.count = positions.length
+		mat4.forEach((v, i) => {
+			data.set(v.get(), i * 16)
+		})
+
+		console.log(mat4.length, data.length)
+		this.instance.count = mat4.length
 		this.instance.id = gl.createBuffer()
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.instance.id)
 		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
