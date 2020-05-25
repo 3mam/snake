@@ -40,6 +40,24 @@ export class Node {
 		}
 	}
 
+	setPosition(x: number, y: number, z: number) {
+		this.position.x = x
+		this.position.y = y
+		this.position.z = z
+	}
+
+	setRotation(x: number, y: number, z: number) {
+		this.rotation.x = x
+		this.rotation.y = y
+		this.rotation.z = z
+	}
+
+	setScale(x: number, y: number, z: number) {
+		this.scale.x = x
+		this.scale.y = y
+		this.scale.z = z
+	}
+
 	createInstance(mat4: Array<Matrix4x4>) {
 		const data = new Float32Array(mat4.length * 16)
 
@@ -47,7 +65,6 @@ export class Node {
 			data.set(v.get(), i * 16)
 		})
 
-		console.log(mat4.length, data.length)
 		this.instance.count = mat4.length
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.instance.id)
 		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
