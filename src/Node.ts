@@ -11,7 +11,6 @@ export class Node {
 	instance: BufferData
 	shader: Shader
 	color: Color
-	viewport: Matrix4x4
 	pivot: {
 		x: number
 		y: number
@@ -32,7 +31,6 @@ export class Node {
 		y: number
 		z: number
 	}
-
 
 	constructor() {
 		this.pivot = {
@@ -99,7 +97,6 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 
 	file.nodes.forEach((v, i) => {
 		const obj = new Node()
-		obj.viewport = new Matrix4x4()
 		obj.color = { r: 1, g: 1, b: 1, a: 1 }
 		obj.shader = shader
 		obj.shader.setViewport(obj)
