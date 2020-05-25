@@ -1,5 +1,5 @@
 import { Matrix4x4 } from './Matrix'
-import { gl, createShader, createProgram } from './gl'
+import { gl, createShader, createProgram, canvas } from './gl'
 import { CameraType, Camera } from './Camera'
 import { Node } from './Node'
 
@@ -157,7 +157,7 @@ export class Shader {
 					gl.uniform1i(v.handle, 0)
 					break
 				case Type.Camera:
-					const aspect = gl.canvas.width / gl.canvas.height
+					const aspect = canvas.width / canvas.height
 					switch (v.var.type) {
 						case CameraType.Perspective:
 							this.viewport.perspective(v.var.fov, aspect, v.var.distance.near, v.var.distance.far)
