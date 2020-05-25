@@ -1,6 +1,7 @@
 import { Matrix4x4 } from './Matrix'
 import { gl, createShader, createProgram } from './gl'
-import { currentCamera, Camera } from './Camera'
+import { CameraType, Camera } from './Camera'
+import { Node } from './Node'
 
 enum Type {
 	Vertex,
@@ -18,7 +19,7 @@ enum Type {
 type ShaderVar = {
 	handle: number | WebGLUniformLocation
 	type: Type
-	variable: any
+	var: any
 }
 
 export type Vec3 = {
@@ -44,6 +45,7 @@ export type BufferData = {
 export class Shader {
 	private program: WebGLProgram
 	private varList: Map<string, ShaderVar>
+	private viewport: Matrix4x4
 
 	constructor() {
 
@@ -71,18 +73,19 @@ export class Shader {
 			outColor = texture(TEXTURE, UV)*COLOR;
 		}
 		`
+		this.viewport = new Matrix4x4()
 
 		const vertexShader = createShader(gl.VERTEX_SHADER, vertexShaderSource)
 		const fragmentShader = createShader(gl.FRAGMENT_SHADER, fragmentShaderSource)
 		this.program = createProgram(vertexShader, fragmentShader)
 		this.varList = new Map()
-		this.varList.set('VERTEX', { type: Type.Vertex, handle: null, variable: null })
-		this.varList.set('INSTANCE', { type: Type.Instance, handle: null, variable: null })
-		this.varList.set('inUV', { type: Type.UV, handle: null, variable: null })
-		this.varList.set('VIEWPORT', { type: Type.Matrix, handle: null, variable: null })
-		this.varList.set('CAMERA', { type: Type.Camera, handle: null, variable: null })
-		this.varList.set('TEXTURE', { type: Type.Texture, handle: null, variable: null })
-		this.varList.set('COLOR', { type: Type.Vec4, handle: null, variable: null })
+		this.varList.set('VERTEX', { type: Type.Vertex, handle: null, var: null })
+		this.varList.set('INSTANCE', { type: Type.Instance, handle: null, var: null })
+		this.varList.set('inUV', { type: Type.UV, handle: null, var: null })
+		this.varList.set('VIEWPORT', { type: Type.Matrix, handle: null, var: null })
+		this.varList.set('CAMERA', { type: Type.Camera, handle: null, var: null })
+		this.varList.set('TEXTURE', { type: Type.Texture, handle: null, var: null })
+		this.varList.set('COLOR', { type: Type.Vec4, handle: null, var: null })
 
 		this.varList.forEach((v, k) => {
 			switch (v.type) {
@@ -104,35 +107,35 @@ export class Shader {
 	}
 
 	set(name: string, variable: any) {
-		this.varList.get(name).variable = variable
+		this.varList.get(name).var = variable
 	}
 
 	setColor(color: Color) {
-		this.varList.get('COLOR').variable = [color.r, color.g, color.b, color.a]
+		this.varList.get('COLOR').var = [color.r, color.g, color.b, color.a]
 	}
 
-	setViewport(mat: Matrix4x4) {
-		this.varList.get('VIEWPORT').variable = mat
+	setViewport(node: Node) {
+		this.varList.get('VIEWPORT').var = node
 	}
 
 	setCamera(cam: Camera) {
-		this.varList.get('CAMERA').variable = cam
+		this.varList.get('CAMERA').var = cam
 	}
 
 	setUV(buffer: BufferData) {
-		this.varList.get('inUV').variable = buffer
+		this.varList.get('inUV').var = buffer
 	}
 
 	setVertex(buffer: BufferData) {
-		this.varList.get('VERTEX').variable = buffer
+		this.varList.get('VERTEX').var = buffer
 	}
 
 	setTexture(id: WebGLUniformLocation) {
-		this.varList.get('TEXTURE').variable = id
+		this.varList.get('TEXTURE').var = id
 	}
 
 	setInstance(buffer: BufferData) {
-		this.varList.get('INSTANCE').variable = buffer
+		this.varList.get('INSTANCE').var = buffer
 	}
 
 	update() {
@@ -140,41 +143,57 @@ export class Shader {
 		this.varList.forEach((v) => {
 			switch (v.type) {
 				case Type.Vertex:
-					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable.id)
+					gl.bindBuffer(gl.ARRAY_BUFFER, v.var.id)
 					gl.enableVertexAttribArray(<number>v.handle)
-					gl.vertexAttribPointer(<number>v.handle, 3, gl.FLOAT, false, 12, v.variable.offset)
+					gl.vertexAttribPointer(<number>v.handle, 3, gl.FLOAT, false, 12, v.var.offset)
 					break
 				case Type.UV:
-					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable.id)
+					gl.bindBuffer(gl.ARRAY_BUFFER, v.var.id)
 					gl.enableVertexAttribArray(<number>v.handle)
-					gl.vertexAttribPointer(<number>v.handle, 2, gl.FLOAT, false, 8, v.variable.offset)
+					gl.vertexAttribPointer(<number>v.handle, 2, gl.FLOAT, false, 8, v.var.offset)
 					break
 				case Type.Texture:
-					gl.bindTexture(gl.TEXTURE_2D, v.variable)
+					gl.bindTexture(gl.TEXTURE_2D, v.var)
 					gl.uniform1i(v.handle, 0)
 					break
 				case Type.Camera:
-					v.variable.matrix.translate(v.variable.position.x, v.variable.position.y, v.variable.position.z)
-					v.variable.matrix.rotateX(v.variable.rotation.x)
-					v.variable.matrix.rotateY(v.variable.rotation.y)
-					v.variable.matrix.rotateZ(v.variable.rotation.z)
-					v.variable.matrix.scale(v.variable.scale.x, v.variable.scale.y, v.variable.scale.z)
-					gl.uniformMatrix4fv(v.handle, false, v.variable.matrix.get())
-					v.variable.matrix.reset()
+					const aspect = gl.canvas.width / gl.canvas.height
+					switch (v.var.type) {
+						case CameraType.Perspective:
+							this.viewport.perspective(v.var.fov, aspect, v.var.distance.near, v.var.distance.far)
+							break
+						case CameraType.Ortho:
+							const halfHeightUnits = gl.canvas.width / 2
+							this.viewport.orthographic(-halfHeightUnits * aspect, halfHeightUnits * aspect, -halfHeightUnits, halfHeightUnits, -75, 200)
+						case CameraType.None:
+							break
+					}
+					this.viewport.translate(v.var.position.x, v.var.position.y, v.var.position.z)
+					this.viewport.rotateX(v.var.rotation.x)
+					this.viewport.rotateY(v.var.rotation.y)
+					this.viewport.rotateZ(v.var.rotation.z)
+					this.viewport.scale(v.var.scale.x, v.var.scale.y, v.var.scale.z)
+					gl.uniformMatrix4fv(v.handle, false, this.viewport.get())
+					this.viewport.reset()
 					break
 				case Type.Matrix:
-					gl.uniformMatrix4fv(v.handle, false, v.variable.get())
-					v.variable.reset()
+					this.viewport.translate(v.var.position.x, v.var.position.y, v.var.position.z)
+					this.viewport.scale(v.var.scale.x, v.var.scale.y, v.var.scale.z)
+					this.viewport.rotateX(v.var.rotation.x)
+					this.viewport.rotateY(v.var.rotation.y)
+					this.viewport.rotateZ(v.var.rotation.z)
+					this.viewport.translate(v.var.pivot.x, v.var.pivot.y, v.var.pivot.z)
+					gl.uniformMatrix4fv(v.handle, false, this.viewport.get())
+					this.viewport.reset()
 					break
 				case Type.Vec4:
-					gl.uniform4fv(v.handle, v.variable)
+					gl.uniform4fv(v.handle, v.var)
 					break
 				case Type.Float:
-					gl.uniform1f(v.handle, v.variable)
+					gl.uniform1f(v.handle, v.var)
 					break
 				case Type.Instance:
-					if (v.variable.id === null) break
-					gl.bindBuffer(gl.ARRAY_BUFFER, v.variable.id)
+					gl.bindBuffer(gl.ARRAY_BUFFER, v.var.id)
 					for (let i = 0; i < 4; i++) {
 						const loc = <number>v.handle + i
 						const offset = i * 16
