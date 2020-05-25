@@ -1,7 +1,8 @@
 export var gl: WebGL2RenderingContext
+export var canvas: HTMLCanvasElement
 
 export function glInit(canvasId: string) {
-	const canvas: HTMLCanvasElement = document.querySelector(canvasId)
+	canvas = document.querySelector(canvasId)
 	gl = canvas.getContext("webgl2", { stencil: true })
 	gl === null && alert("Unable to initialize WebGL2. Your browser or machine may not support it.")
 }
