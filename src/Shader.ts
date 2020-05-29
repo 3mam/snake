@@ -1,4 +1,4 @@
-import { Matrix4x4 } from './Matrix'
+import { Matrix4x4 } from './Math'
 import { gl, createShader, createProgram, canvas } from './gl'
 import { CameraType, Camera } from './Camera'
 import { Node } from './Node'
@@ -168,11 +168,11 @@ export class Shader {
 						case CameraType.None:
 							break
 					}
-					this.viewport.translate(v.var.position.x, v.var.position.y, v.var.position.z)
+					this.viewport.scale(v.var.scale.x, v.var.scale.y, v.var.scale.z)
 					this.viewport.rotateX(v.var.rotation.x)
 					this.viewport.rotateY(v.var.rotation.y)
 					this.viewport.rotateZ(v.var.rotation.z)
-					this.viewport.scale(v.var.scale.x, v.var.scale.y, v.var.scale.z)
+					this.viewport.translate(v.var.position.x, v.var.position.y, v.var.position.z)
 					gl.uniformMatrix4fv(v.handle, false, this.viewport.get())
 					this.viewport.reset()
 					break

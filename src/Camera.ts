@@ -1,4 +1,4 @@
-import { Matrix4x4 } from './Matrix'
+import { Matrix4x4 } from './Math'
 
 export enum CameraType {
 	Perspective,

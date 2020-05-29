@@ -1,7 +1,7 @@
 import { gl } from './gl'
 import { Shader, Color, BufferData, Vec3 } from './Shader'
 import { gltfLoad } from './glTF'
-import { Matrix4x4 } from './Matrix'
+import { Matrix4x4 } from './Math'
 import { currentCamera } from './Camera'
 
 export class Node {
@@ -38,6 +38,12 @@ export class Node {
 			y: 0,
 			z: 0,
 		}
+	}
+
+	setPivot(x: number, y: number, z: number) {
+		this.pivot.x = x
+		this.pivot.y = y
+		this.pivot.z = z
 	}
 
 	setPosition(x: number, y: number, z: number) {
@@ -99,11 +105,11 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 	image.onload = () => {
 		gl.bindTexture(gl.TEXTURE_2D, texture)
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-		//gl.generateMipmap(gl.TEXTURE_2D)
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+		gl.generateMipmap(gl.TEXTURE_2D)
 	}
 
 	const blob = await (await (await fetch(dir + file.buffers[0].uri)).blob()).arrayBuffer()
