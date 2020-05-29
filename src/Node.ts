@@ -1,7 +1,7 @@
 import { gl } from './gl'
 import { Shader, Color, BufferData, Vec3 } from './Shader'
 import { gltfLoad } from './glTF'
-import { Matrix4x4 } from './Math'
+import { Mat4 } from './Math'
 import { currentCamera } from './Camera'
 
 export class Node {
@@ -64,7 +64,7 @@ export class Node {
 		this.scale.z = z
 	}
 
-	createInstance(mat4: Array<Matrix4x4>) {
+	createInstance(mat4: Array<Mat4>) {
 		const data = new Float32Array(mat4.length * 16)
 
 		mat4.forEach((v, i) => {
@@ -169,7 +169,7 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 		}
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, obj.instance.id)
-		gl.bufferData(gl.ARRAY_BUFFER, new Matrix4x4().get(), gl.STATIC_DRAW)
+		gl.bufferData(gl.ARRAY_BUFFER, new Mat4().get(), gl.STATIC_DRAW)
 
 		obj.shader.setVertex(obj.vertex)
 		obj.shader.setUV(obj.uv)

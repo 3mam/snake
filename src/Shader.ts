@@ -1,4 +1,4 @@
-import { Matrix4x4 } from './Math'
+import { Mat4 } from './Math'
 import { gl, createShader, createProgram, canvas } from './gl'
 import { CameraType, Camera } from './Camera'
 import { Node } from './Node'
@@ -45,7 +45,7 @@ export type BufferData = {
 export class Shader {
 	private program: WebGLProgram
 	private varList: Map<string, ShaderVar>
-	private viewport: Matrix4x4
+	private viewport: Mat4
 
 	constructor() {
 
@@ -73,7 +73,7 @@ export class Shader {
 			outColor = texture(TEXTURE, UV)*COLOR;
 		}
 		`
-		this.viewport = new Matrix4x4()
+		this.viewport = new Mat4()
 
 		const vertexShader = createShader(gl.VERTEX_SHADER, vertexShaderSource)
 		const fragmentShader = createShader(gl.FRAGMENT_SHADER, fragmentShaderSource)

@@ -1,4 +1,4 @@
-export class Matrix4x4 {
+export class Mat4 {
 	private mat: Float32Array
 	private tmp: Float32Array
 	constructor() {
@@ -18,7 +18,7 @@ export class Matrix4x4 {
 			0, 0, 1, 0,
 			x, y, z, 1,
 		])
-		this.multiplyMatrices4x4(this.mat, this.tmp)
+		this.multiply(this.mat, this.tmp)
 	}
 
 	scale(x: number, y: number, z: number) {
@@ -28,12 +28,12 @@ export class Matrix4x4 {
 			0, 0, z, 0,
 			0, 0, 0, 1,
 		])
-		this.multiplyMatrices4x4(this.mat, this.tmp)
+		this.multiply(this.mat, this.tmp)
 	}
 
-	rotateX(angle: number) {
-		const c = Math.cos(angle)
-		const s = Math.sin(angle)
+	rotateX(radian: number) {
+		const c = Math.cos(radian)
+		const s = Math.sin(radian)
 		this.tmp.set([
 			1, 0, 0, 0,
 			0, c, -s, 0,
@@ -41,31 +41,31 @@ export class Matrix4x4 {
 			0, 0, 0, 1,
 		])
 
-		this.multiplyMatrices4x4(this.mat, this.tmp)
+		this.multiply(this.mat, this.tmp)
 	}
 
-	rotateY(angle: number) {
-		const c = Math.cos(angle)
-		const s = Math.sin(angle)
+	rotateY(radian: number) {
+		const c = Math.cos(radian)
+		const s = Math.sin(radian)
 		this.tmp.set([
 			c, 0, s, 0,
 			0, 1, 0, 0,
 			-s, 0, c, 0,
 			0, 0, 0, 1,
 		])
-		this.multiplyMatrices4x4(this.mat, this.tmp)
+		this.multiply(this.mat, this.tmp)
 	}
 
-	rotateZ(angle: number) {
-		const c = Math.cos(angle)
-		const s = Math.sin(angle)
+	rotateZ(radian: number) {
+		const c = Math.cos(radian)
+		const s = Math.sin(radian)
 		this.tmp.set([
 			c, -s, 0, 0,
 			s, c, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1,
 		])
-		this.multiplyMatrices4x4(this.mat, this.tmp)
+		this.multiply(this.mat, this.tmp)
 	}
 
 	reset() {
@@ -92,12 +92,12 @@ export class Matrix4x4 {
 			0, 0, 2 / (near - far), 0,
 			(left + right) / (left - right), (bottom + top) / (bottom - top), (near + far) / (near - far), 1,
 		])
-		this.multiplyMatrices4x4(this.mat, this.tmp)
+		this.multiply(this.mat, this.tmp)
 	}
 
 	perspective(fov: number, aspect: number, near: number, far: number) {
-		const fieldOfViewInRadians = fov * Math.PI / 180
-		const f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians)
+		const angleToRadiant = fov * Math.PI / 180
+		const f = Math.tan(Math.PI * 0.5 - 0.5 * angleToRadiant)
 		const rangeInv = 1.0 / (near - far)
 		this.tmp.set([
 			f / aspect, 0, 0, 0,
@@ -105,7 +105,7 @@ export class Matrix4x4 {
 			0, 0, (near + far) * rangeInv, -1,
 			0, 0, near * far * rangeInv * 2, 0,
 		])
-		this.multiplyMatrices4x4(this.mat, this.tmp)
+		this.multiply(this.mat, this.tmp)
 	}
 
 	lookAt(cameraPosition: number[], target: number[], up: number[]) {
@@ -121,10 +121,10 @@ export class Matrix4x4 {
 			0, 0, 0, 1,
 		])
 
-		this.multiplyMatrices4x4(this.mat, this.tmp)
+		this.multiply(this.mat, this.tmp)
 	}
 
-	private multiplyMatrices4x4(dst: Float32Array, src: Float32Array) {
+	private multiply(dst: Float32Array, src: Float32Array) {
 		this.mat.set([
 			src[0] * dst[0] + src[1] * dst[4] + src[2] * dst[8] + src[3] * dst[12],
 			src[0] * dst[1] + src[1] * dst[5] + src[2] * dst[9] + src[3] * dst[13],
