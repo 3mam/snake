@@ -13,7 +13,6 @@ enum Type {
 	Mat4,
 	Float,
 	Vec4,
-	Camera,
 }
 
 type ShaderVar = {
@@ -83,7 +82,7 @@ export class Shader {
 		this.varList.set('INSTANCE', { type: Type.Instance, handle: null, var: null })
 		this.varList.set('inUV', { type: Type.UV, handle: null, var: null })
 		this.varList.set('VIEWPORT', { type: Type.Matrix, handle: null, var: null })
-		this.varList.set('CAMERA', { type: Type.Camera, handle: null, var: null })
+		this.varList.set('CAMERA', { type: Type.Matrix, handle: null, var: null })
 		this.varList.set('TEXTURE', { type: Type.Texture, handle: null, var: null })
 		this.varList.set('COLOR', { type: Type.Vec4, handle: null, var: null })
 
@@ -99,7 +98,6 @@ export class Shader {
 				case Type.Mat4:
 				case Type.Vec4:
 				case Type.Float:
-				case Type.Camera:
 					v.handle = gl.getUniformLocation(this.program, k)
 					break
 			}
@@ -114,12 +112,12 @@ export class Shader {
 		this.varList.get('COLOR').var = [color.r, color.g, color.b, color.a]
 	}
 
-	setViewport(node: Node) {
-		this.varList.get('VIEWPORT').var = node
+	setViewport(view: Mat4) {
+		this.varList.get('VIEWPORT').var = view
 	}
 
 	setCamera(cam: Camera) {
-		this.varList.get('CAMERA').var = cam
+		this.varList.get('CAMERA').var = cam.view
 	}
 
 	setUV(buffer: BufferData) {
@@ -156,35 +154,8 @@ export class Shader {
 					gl.bindTexture(gl.TEXTURE_2D, v.var)
 					gl.uniform1i(v.handle, 0)
 					break
-				case Type.Camera:
-					const aspect = canvas.width / canvas.height
-					switch (v.var.type) {
-						case CameraType.Perspective:
-							this.viewport.perspective(v.var.fov, aspect, v.var.distance.near, v.var.distance.far)
-							break
-						case CameraType.Ortho:
-							const halfHeightUnits = gl.canvas.width / 2
-							this.viewport.orthographic(-halfHeightUnits * aspect, halfHeightUnits * aspect, -halfHeightUnits, halfHeightUnits, -75, 200)
-						case CameraType.None:
-							break
-					}
-					this.viewport.scale(v.var.scale.x, v.var.scale.y, v.var.scale.z)
-					this.viewport.rotateX(v.var.rotation.x)
-					this.viewport.rotateY(v.var.rotation.y)
-					this.viewport.rotateZ(v.var.rotation.z)
-					this.viewport.translate(v.var.position.x, v.var.position.y, v.var.position.z)
-					gl.uniformMatrix4fv(v.handle, false, this.viewport.get())
-					this.viewport.identity()
-					break
 				case Type.Matrix:
-					this.viewport.translate(v.var.position.x, v.var.position.y, v.var.position.z)
-					this.viewport.scale(v.var.scale.x, v.var.scale.y, v.var.scale.z)
-					this.viewport.rotateX(v.var.rotation.x)
-					this.viewport.rotateY(v.var.rotation.y)
-					this.viewport.rotateZ(v.var.rotation.z)
-					this.viewport.translate(v.var.pivot.x, v.var.pivot.y, v.var.pivot.z)
-					gl.uniformMatrix4fv(v.handle, false, this.viewport.get())
-					this.viewport.identity()
+					gl.uniformMatrix4fv(v.handle, false, v.var.get())
 					break
 				case Type.Vec4:
 					gl.uniform4fv(v.handle, v.var)

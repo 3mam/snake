@@ -11,57 +11,12 @@ export class Node {
 	instance: BufferData
 	shader: Shader
 	color: Color
-	pivot: {
-		x: number
-		y: number
-		z: number
-	}
-	position: {
-		x: number
-		y: number
-		z: number
-	}
-	rotation: {
-		x: number
-		y: number
-		z: number
-	}
-	scale: {
-		x: number
-		y: number
-		z: number
-	}
+	view: Mat4
+	origin: Mat4
 
 	constructor() {
-		this.pivot = {
-			x: 0,
-			y: 0,
-			z: 0,
-		}
-	}
-
-	setPivot(x: number, y: number, z: number) {
-		this.pivot.x = x
-		this.pivot.y = y
-		this.pivot.z = z
-	}
-
-	setPosition(x: number, y: number, z: number) {
-		this.position.x = x
-		this.position.y = y
-		this.position.z = z
-	}
-
-	setRotation(x: number, y: number, z: number) {
-		this.rotation.x = x
-		this.rotation.y = y
-		this.rotation.z = z
-	}
-
-	setScale(x: number, y: number, z: number) {
-		this.scale.x = x
-		this.scale.y = y
-		this.scale.z = z
+		this.view = new Mat4()
+		this.origin = new Mat4()
 	}
 
 	createInstance(mat4: Array<Mat4>) {
@@ -78,7 +33,7 @@ export class Node {
 
 	render() {
 		this.shader.setTexture(this.texture)
-		this.shader.setViewport(this)
+		this.shader.setViewport(this.view)
 		this.shader.setCamera(currentCamera)
 		this.shader.setColor(this.color)
 		this.shader.setVertex(this.vertex)
@@ -122,26 +77,24 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 		const obj = new Node()
 		obj.color = { r: 1, g: 1, b: 1, a: 1 }
 		obj.shader = shader
-		obj.shader.setViewport(obj)
+		obj.shader.setViewport(obj.view)
 		obj.shader.setColor(obj.color)
 
 		obj.texture = texture
 
-		obj.position = {
-			x: v.translation == void (0) ? 0 : v.translation[0],
-			y: v.translation == void (0) ? 0 : v.translation[1],
-			z: v.translation == void (0) ? 0 : v.translation[2],
-		}
-		obj.rotation = {
-			x: v.rotation == void (0) ? 0 : v.rotation[0],
-			y: v.rotation == void (0) ? 0 : v.rotation[1],
-			z: v.rotation == void (0) ? 0 : v.rotation[2],
-		}
-		obj.scale = {
-			x: v.scale == void (0) ? 1 : v.scale[0],
-			y: v.scale == void (0) ? 1 : v.scale[1],
-			z: v.scale == void (0) ? 1 : v.scale[2],
-		}
+		obj.origin.translate(
+			v.translation == void (0) ? 0 : v.translation[0],
+			v.translation == void (0) ? 0 : v.translation[1],
+			v.translation == void (0) ? 0 : v.translation[2],
+		)
+		obj.origin.rotateX(v.rotation == void (0) ? 0 : v.rotation[0])
+		obj.origin.rotateY(v.rotation == void (0) ? 0 : v.rotation[1])
+		obj.origin.rotateZ(v.rotation == void (0) ? 0 : v.rotation[2])
+		obj.origin.scale(
+			v.scale == void (0) ? 1 : v.scale[0],
+			v.scale == void (0) ? 1 : v.scale[1],
+			v.scale == void (0) ? 1 : v.scale[2],
+		)
 
 
 		const position = file.meshes[v.mesh].primitives[0].attributes.POSITION
