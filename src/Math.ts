@@ -1,3 +1,18 @@
+export class Vec3 {
+	x: number
+	y: number
+	z: number
+	constructor(x = 0, y = 0, z = 0) {
+		this.x = x
+		this.y = y
+		this.z = z
+	}
+	static add(a: Vec3, ...b: Vec3[]): Vec3 {
+		const s = b.reduce((p, c) => new Vec3(c.x + p.x, c.y + p.y, c.z + p.z))
+		return new Vec3(a.x + s.x, a.y + s.y, a.z + s.z)
+	}
+}
+
 export class Mat4 {
 	private mat: Float32Array
 	private tmp: Float32Array
@@ -68,7 +83,7 @@ export class Mat4 {
 		this.multiply(this.mat, this.tmp)
 	}
 
-	reset() {
+	identity() {
 		this.mat.set([
 			1, 0, 0, 0,
 			0, 1, 0, 0,
@@ -173,3 +188,4 @@ function cross(a: number[], b: number[]) {
 	dst[2] = a[0] * b[1] - a[1] * b[0]
 	return dst
 }
+

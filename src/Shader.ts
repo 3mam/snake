@@ -174,7 +174,7 @@ export class Shader {
 					this.viewport.rotateZ(v.var.rotation.z)
 					this.viewport.translate(v.var.position.x, v.var.position.y, v.var.position.z)
 					gl.uniformMatrix4fv(v.handle, false, this.viewport.get())
-					this.viewport.reset()
+					this.viewport.identity()
 					break
 				case Type.Matrix:
 					this.viewport.translate(v.var.position.x, v.var.position.y, v.var.position.z)
@@ -184,7 +184,7 @@ export class Shader {
 					this.viewport.rotateZ(v.var.rotation.z)
 					this.viewport.translate(v.var.pivot.x, v.var.pivot.y, v.var.pivot.z)
 					gl.uniformMatrix4fv(v.handle, false, this.viewport.get())
-					this.viewport.reset()
+					this.viewport.identity()
 					break
 				case Type.Vec4:
 					gl.uniform4fv(v.handle, v.var)
