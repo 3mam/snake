@@ -1,10 +1,10 @@
 import { gl } from './gl'
-import { Shader, Color, BufferData, Vec3 } from './Shader'
+import { Shader, Color, BufferData } from './Shader'
 import { gltfLoad } from './glTF'
-import { Mat4 } from './Math'
+import { Mat4, Vec3, ITranslate } from './Math'
 import { currentCamera } from './Camera'
 
-export class Node {
+export class Node implements ITranslate {
 	texture: WebGLTexture
 	vertex: BufferData
 	uv: BufferData
@@ -17,6 +17,25 @@ export class Node {
 	constructor() {
 		this.view = new Mat4()
 		this.origin = new Mat4()
+	}
+
+	position(pos: Vec3) {
+		this.view.translate(pos.x, pos.y, pos.z)
+	}
+
+	rotation(pos: Vec3) {
+		this.view.rotateX(pos.x)
+		this.view.rotateY(pos.y)
+		this.view.rotateZ(pos.z)
+
+	}
+
+	scale(pos: Vec3) {
+		this.view.scale(pos.x, pos.y, pos.z)
+	}
+
+	identity() {
+		this.view.identity()
 	}
 
 	createInstance(mat4: Array<Mat4>) {
