@@ -1,3 +1,10 @@
+export interface ITranslate {
+	position(pos: Vec3)
+	rotation(pos: Vec3)
+	scale(pos: Vec3)
+	identity()
+}
+
 export class Vec3 {
 	x: number
 	y: number
@@ -7,9 +14,26 @@ export class Vec3 {
 		this.y = y
 		this.z = z
 	}
-	static add(a: Vec3, ...b: Vec3[]): Vec3 {
-		const s = b.reduce((p, c) => new Vec3(c.x + p.x, c.y + p.y, c.z + p.z))
-		return new Vec3(a.x + s.x, a.y + s.y, a.z + s.z)
+
+	add(vec: Vec3): Vec3 {
+		return new Vec3(this.x + vec.x, this.y + vec.y, this.z + vec.z)
+	}
+
+	subtract(vec: Vec3): Vec3 {
+		return new Vec3(this.x - vec.x, this.y - vec.y, this.z - vec.z)
+	}
+
+	multiply(n: number): Vec3 {
+		return new Vec3(this.x * n, this.y * n, this.z * n)
+	}
+
+	directionAngle(angle: number): Vec3 {
+		const rad = angle * Math.PI / 180
+		return new Vec3(this.x + Math.sin(rad), this.y + Math.cos(rad), 0)
+	}
+
+	directionRadius(rad: number): Vec3 {
+		return new Vec3(this.x + Math.sin(rad), this.y + Math.cos(rad), 0)
 	}
 }
 
