@@ -15,16 +15,25 @@ export class Vec3 {
 		this.z = z
 	}
 
-	add(vec: Vec3): Vec3 {
-		return new Vec3(this.x + vec.x, this.y + vec.y, this.z + vec.z)
+	add(n: Vec3 | number): Vec3 {
+		if (typeof n === 'number')
+			return new Vec3(this.x + n, this.y + n, this.z + n)
+		if (n instanceof Vec3)
+			return new Vec3(this.x + n.x, this.y + n.y, this.z + n.z)
 	}
 
-	subtract(vec: Vec3): Vec3 {
-		return new Vec3(this.x - vec.x, this.y - vec.y, this.z - vec.z)
+	subtract(n: Vec3 | number): Vec3 {
+		if (typeof n === 'number')
+			return new Vec3(this.x - n, this.y - n, this.z - n)
+		if (n instanceof Vec3)
+			return new Vec3(this.x - n.x, this.y - n.y, this.z - n.z)
 	}
 
-	multiply(n: number): Vec3 {
-		return new Vec3(this.x * n, this.y * n, this.z * n)
+	multiply(n: Vec3 | number): Vec3 {
+		if (typeof n === 'number')
+			return new Vec3(this.x * n, this.y * n, this.z * n)
+		if (n instanceof Vec3)
+			return new Vec3(this.x * n.x, this.y * n.y, this.z * n.z)
 	}
 
 	directionAngle(angle: number): Vec3 {
@@ -34,6 +43,31 @@ export class Vec3 {
 
 	directionRadius(rad: number): Vec3 {
 		return new Vec3(this.x + Math.sin(rad), this.y + Math.cos(rad), 0)
+	}
+
+	dot(v: Vec3): number {
+		const tmp = this.multiply(v)
+		return tmp.x + tmp.y + tmp.z
+	}
+
+	normalize(): Vec3 {
+		const v = new Vec3()
+		const length = Math.sqrt(this.dot(this))
+		// make sure we don't divide by 0.
+		if (length > 0.00001) {
+			v.x = this.x / length
+			v.y = this.y / length
+			v.z = this.z / length
+		}
+		return v
+	}
+
+	slerp(end: Vec3, percent: number): Vec3 {
+		const dot = this.dot(end)
+		clamp(dot, -1.0, 1.0)
+		const theta = Math.acos(dot) * percent
+		const relativeVec = end.subtract(this).multiply(dot).normalize()
+		return this.multiply(Math.cos(theta)).add(relativeVec.multiply(Math.sin(theta)))
 	}
 }
 
@@ -213,3 +247,10 @@ function cross(a: number[], b: number[]) {
 	return dst
 }
 
+export function clamp(x: number, min: number, max: number): number {
+	if (x < min)
+		x = min
+	else if (x > max)
+		x = max
+	return x
+}
