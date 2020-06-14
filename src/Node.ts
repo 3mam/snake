@@ -12,33 +12,41 @@ export class Node implements ITranslate {
 	shader: Shader
 	color: Color
 	view: Mat4
-	origin: Mat4
+	origin: {
+		translation: Vec3
+		scale: Vec3
+		rotate: Vec3
+	}
 
 	constructor() {
 		this.view = new Mat4()
-		this.origin = new Mat4()
+		this.origin = {
+			translation: new Vec3,
+			scale: new Vec3,
+			rotate: new Vec3,
+		}
 	}
 
-	position(pos: Vec3) {
-		this.view.translate(pos.x, pos.y, pos.z)
+	position(v: Vec3) {
+		this.view.translate(v)
 	}
 
-	rotation(pos: Vec3) {
-		this.view.rotateX(pos.x)
-		this.view.rotateY(pos.y)
-		this.view.rotateZ(pos.z)
+	rotation(v: Vec3) {
+		this.view.rotateX(v.x)
+		this.view.rotateY(v.y)
+		this.view.rotateZ(v.z)
 
 	}
 
-	scale(pos: Vec3) {
-		this.view.scale(pos.x, pos.y, pos.z)
+	scale(v: Vec3) {
+		this.view.scale(v)
 	}
 
 	identity() {
 		this.view.identity()
 	}
 
-	createInstance(mat4: Array<Mat4>) {
+	createInstance(mat4: Mat4[]) {
 		const data = new Float32Array(mat4.length * 16)
 
 		mat4.forEach((v, i) => {
@@ -48,6 +56,11 @@ export class Node implements ITranslate {
 		this.instance.count = mat4.length
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.instance.id)
 		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
+	}
+
+	updateInstance(index: number, mat4: Mat4) {
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.instance.id)
+		gl.bufferSubData(gl.ARRAY_BUFFER, index * 64, mat4.get())
 	}
 
 	render() {
@@ -101,20 +114,17 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 
 		obj.texture = texture
 
-		obj.origin.translate(
-			v.translation == void (0) ? 0 : v.translation[0],
-			v.translation == void (0) ? 0 : v.translation[1],
-			v.translation == void (0) ? 0 : v.translation[2],
-		)
-		obj.origin.rotateX(v.rotation == void (0) ? 0 : v.rotation[0])
-		obj.origin.rotateY(v.rotation == void (0) ? 0 : v.rotation[1])
-		obj.origin.rotateZ(v.rotation == void (0) ? 0 : v.rotation[2])
-		obj.origin.scale(
-			v.scale == void (0) ? 1 : v.scale[0],
-			v.scale == void (0) ? 1 : v.scale[1],
-			v.scale == void (0) ? 1 : v.scale[2],
-		)
+		obj.origin.translation.x = v.translation == void (0) ? 0 : v.translation[0]
+		obj.origin.translation.y = v.translation == void (0) ? 0 : v.translation[1]
+		obj.origin.translation.z = v.translation == void (0) ? 0 : v.translation[2]
 
+		obj.origin.rotate.x = v.rotation == void (0) ? 0 : v.rotation[0]
+		obj.origin.rotate.y = v.rotation == void (0) ? 0 : v.rotation[1]
+		obj.origin.rotate.z = v.rotation == void (0) ? 0 : v.rotation[2]
+
+		obj.origin.scale.x = v.scale == void (0) ? 1 : v.scale[0]
+		obj.origin.scale.y = v.scale == void (0) ? 1 : v.scale[1]
+		obj.origin.scale.z = v.scale == void (0) ? 1 : v.scale[2]
 
 		const position = file.meshes[v.mesh].primitives[0].attributes.POSITION
 		const positionBufferView = file.accessors[position].bufferView
