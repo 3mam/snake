@@ -84,20 +84,80 @@ export class Mat4 {
 		this.tmp = new Float32Array(16)
 	}
 
-	translate(x: number, y: number, z: number) {
+	translate(v: Vec3) {
 		this.tmp.set([
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
-			x, y, z, 1,
+			v.x, v.y, v.z, 1,
 		])
 		this.multiply(this.mat, this.tmp)
 	}
 
-	scale(x: number, y: number, z: number) {
+	translateX(x: number) {
+		this.tmp.set([
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			x, 0, 0, 1,
+		])
+		this.multiply(this.mat, this.tmp)
+	}
+
+	translateY(y: number) {
+		this.tmp.set([
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, y, 0, 1,
+		])
+		this.multiply(this.mat, this.tmp)
+	}
+
+	translateZ(z: number) {
+		this.tmp.set([
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, z, 1,
+		])
+		this.multiply(this.mat, this.tmp)
+	}
+
+	scale(v: Vec3) {
+		this.tmp.set([
+			v.x, 0, 0, 0,
+			0, v.y, 0, 0,
+			0, 0, v.z, 0,
+			0, 0, 0, 1,
+		])
+		this.multiply(this.mat, this.tmp)
+	}
+
+	scaleX(x: number) {
 		this.tmp.set([
 			x, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1,
+		])
+		this.multiply(this.mat, this.tmp)
+	}
+
+	scaleY(y: number) {
+		this.tmp.set([
+			1, 0, 0, 0,
 			0, y, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1,
+		])
+		this.multiply(this.mat, this.tmp)
+	}
+
+	scaleZ(z: number) {
+		this.tmp.set([
+			1, 0, 0, 0,
+			0, 1, 0, 0,
 			0, 0, z, 0,
 			0, 0, 0, 1,
 		])
