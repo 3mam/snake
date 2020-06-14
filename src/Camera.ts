@@ -44,19 +44,19 @@ export class Camera implements ITranslate {
 		}
 	}
 
-	position(pos: Vec3) {
-		this.view.translate(pos.x, pos.y, pos.z)
+	position(v: Vec3) {
+		this.view.translate(v)
 	}
 
-	rotation(pos: Vec3) {
-		this.view.rotateX(pos.x)
-		this.view.rotateY(pos.y)
-		this.view.rotateZ(pos.z)
+	rotation(v: Vec3) {
+		this.view.rotateX(v.x)
+		this.view.rotateY(v.y)
+		this.view.rotateZ(v.z)
 
 	}
 
-	scale(pos: Vec3) {
-		this.view.scale(pos.x, pos.y, pos.z)
+	scale(v: Vec3) {
+		this.view.scale(v)
 	}
 
 	identity() {
@@ -68,7 +68,7 @@ export class Camera implements ITranslate {
 	}
 
 	zoom(value: number) {
-		this.view.scale(value, value, value)
+		this.view.scale(new Vec3(value, value, value))
 	}
 
 	getView(): Mat4 {
