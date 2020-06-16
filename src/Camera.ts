@@ -34,7 +34,7 @@ export class Camera implements ITranslate {
 		currentCamera = this
 	}
 
-	perspective() {
+	identity() {
 		this.aspect = canvas.width / canvas.height
 		this.view.identity()
 		switch (this.type) {
@@ -57,10 +57,6 @@ export class Camera implements ITranslate {
 
 	scale(v: Vec3) {
 		this.view.scale(v)
-	}
-
-	identity() {
-		this.view.identity()
 	}
 
 	setFov(fov: number) {
