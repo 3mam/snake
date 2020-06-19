@@ -36,6 +36,14 @@ export class Vec3 {
 			return new Vec3(this.x * n.x, this.y * n.y, this.z * n.z)
 	}
 
+	division(n: Vec3 | number): Vec3 {
+		if (typeof n === 'number')
+			return new Vec3(this.x / n, this.y / n, this.z / n)
+		if (n instanceof Vec3)
+			return new Vec3(this.x / n.x, this.y / n.y, this.z / n.z)
+
+	}
+
 	directionAngle(angle: number): Vec3 {
 		const rad = angle * Math.PI / 180
 		return new Vec3(this.x + Math.sin(rad), this.y + Math.cos(rad), 0)
@@ -43,6 +51,10 @@ export class Vec3 {
 
 	directionRadius(rad: number): Vec3 {
 		return new Vec3(this.x + Math.sin(rad), this.y + Math.cos(rad), 0)
+	}
+
+	reversDirectionRadius(rad: number): Vec3 {
+		return new Vec3(this.x - Math.sin(rad), this.y - Math.cos(rad), 0)
 	}
 
 	dot(v: Vec3): number {
@@ -313,4 +325,10 @@ export function clamp(x: number, min: number, max: number): number {
 	else if (x > max)
 		x = max
 	return x
+}
+
+export function getRandomInt(min: number, max: number): number {
+	min = Math.ceil(min)
+	max = Math.floor(max)
+	return Math.floor(Math.random() * (max - min)) + min
 }
