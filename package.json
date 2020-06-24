@@ -1,14 +1,14 @@
 {
-	"name": "izo",
+	"name": "snake",
 	"version": "1.0.0",
-	"description": "Isometric game engine in WebGL2",
+	"description": "This is snake write from scratch in WebGL2 and TypeScript",
 	"main": "index.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "webpack-dev-server --mode development --open http://localhost:8080 --hot --host 0.0.0.0",
 		"build": "webpack --mode production"
 	},
-	"keywords": [],
+	"keywords": ["snake"],
 	"author": "Konrad Chmielecki",
 	"license": "",
 	"devDependencies": {
