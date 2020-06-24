@@ -21,12 +21,6 @@ type ShaderVar = {
 	var: any
 }
 
-export type Vec3 = {
-	x: number
-	y: number
-	z: number
-}
-
 export type Color = {
 	r: number
 	g: number
@@ -117,7 +111,7 @@ export class Shader {
 	}
 
 	setCamera(cam: Camera) {
-		this.varList.get('CAMERA').var = cam.view
+		this.varList.get('CAMERA').var = cam.getView()
 	}
 
 	setUV(buffer: BufferData) {
