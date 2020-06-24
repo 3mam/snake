@@ -116,6 +116,7 @@ window.onload = () => {
 			cell: number
 			direction: number
 		}[]
+		in: number
 
 		async init() {
 			const model = await loadNode('./data/snake.gltf')
@@ -142,19 +143,17 @@ window.onload = () => {
 			}
 
 			this.arena.createInstance(area)
-			this.speed = 0.1
+			this.speed = 0.45
 
 			const pos = this.arenaCollision.length / 2
 			this.controlCollision = new Circle(this.arenaCollision[pos].x, this.arenaCollision[pos].y, 0.1)
 			window.addEventListener('keydown', (ev) => {
-				if (ev.key === 'a' && ev.repeat === false)
+				if (ev.key === 'a')
 					this.direction = EDirection.left
 
-				if (ev.key === 'd' && ev.repeat === false)
+				if (ev.key === 'd')
 					this.direction = EDirection.right
 
-				if (ev.key === 'w' && ev.repeat === false)
-					this.pressKey = true
 
 			})
 			window.addEventListener('keyup', (ev) => {
@@ -182,21 +181,24 @@ window.onload = () => {
 			this.cell = 0
 			this.stack = new Array()
 			this.snakeSize = 1
+			this.in = 0.1
 		}
 
 		update(delta) {
+			let speed = this.speed * delta
 			this.cam.identity()
 			this.cam.rotation(new Vec3(0.7, 0, 0))
+			this.cam.position(new Vec3(0, 0.8, -1).subtract(this.head.position))
+			this.in += 0.01
 
 			//this.cam.position(new Vec3(-4 - this.x, -4 - this.y, - 1))
 
-			this.head.update(this.speed)
+			this.head.update(speed)
 			this.midleSnakeNode.forEach((m) => {
-				m.update(this.speed)
+				m.update(speed)
 			})
-			this.tail.update(this.speed)
+			this.tail.update(speed)
 
-			this.cam.position(new Vec3(0, 0.8, -1).subtract(this.head.position))
 
 			this.arenaCollision.forEach((v, i) => {
 				if (this.pressKey) {
@@ -255,6 +257,7 @@ window.onload = () => {
 					}
 				})
 			})
+
 			// this.head.identity()
 			// this.head.position(this.headPosition)
 			// this.head.rotation(new Vec3(0, 0, this.angle))
@@ -288,7 +291,7 @@ window.onload = () => {
 			// }
 
 
-			this.speed = 0.3 * delta
+
 		}
 
 		render(delta) {
