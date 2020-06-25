@@ -130,13 +130,13 @@ window.onload = () => {
 			for (let y = 0; y < 16; y++) {
 				for (let x = 0; x < 16; x++) {
 					const mat4 = new Mat4()
-					let wall = 0.0
+					let wall = -0.05
 					//if (x === 0 || x === 31 || y === 0 || y === 31) wall = 0.05
-					mat4.translate(new Vec3(x * 0.136, x % 2 == 0 ? y * 0.156 + 0.08 : y * 0.156, wall))
+					mat4.translate(new Vec3(x * 0.142764, x % 2 == 0 ? y * 0.164848 + 0.082424 : y * 0.164848, wall))
 					mat4.rotateZ(90 * Math.PI / 180)
 					area[(x * 16) + y] = mat4
 
-					this.arenaCollision[(x * 16) + y] = new Circle(x * 0.136, x % 2 == 0 ? y * 0.156 + 0.08 : y * 0.156, 0.0025)
+					this.arenaCollision[(x * 16) + y] = new Circle(x * 0.142764, x % 2 == 0 ? y * 0.164848 + 0.082424 : y * 0.164848, 0.0005)
 
 					wall = 0.0
 				}

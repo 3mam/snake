@@ -1,6 +1,6 @@
 {
     "asset" : {
-        "generator" : "Khronos glTF Blender I/O v1.1.46",
+        "generator" : "Khronos glTF Blender I/O v1.2.75",
         "version" : "2.0"
     },
     "scene" : 0,
@@ -41,12 +41,7 @@
         },
         {
             "mesh" : 3,
-            "name" : "arena",
-            "translation" : [
-                0.010425606742501259,
-                -0.003828383982181549,
-                0.030441254377365112
-            ]
+            "name" : "arena"
         },
         {
             "mesh" : 4,
@@ -164,7 +159,7 @@
             "max" : [
                 0.062168922275304794,
                 0.10057152062654495,
-                0.0219937264919281
+                0.02199372462928295
             ],
             "min" : [
                 -0.062168922275304794,
@@ -244,29 +239,29 @@
         {
             "bufferView" : 9,
             "componentType" : 5126,
-            "count" : 60,
+            "count" : 54,
             "max" : [
-                0.0718691349029541,
-                0.09845209121704102,
-                -0.0107424920424819
+                0.08242415636777878,
+                0.09517522156238556,
+                0.04000019282102585
             ],
             "min" : [
-                -0.09297917783260345,
-                -0.0918983519077301,
-                -0.1386936604976654
+                -0.08242415636777878,
+                -0.09517522156238556,
+                -0.042650386691093445
             ],
             "type" : "VEC3"
         },
         {
             "bufferView" : 10,
             "componentType" : 5126,
-            "count" : 60,
+            "count" : 54,
             "type" : "VEC2"
         },
         {
             "bufferView" : 11,
             "componentType" : 5123,
-            "count" : 60,
+            "count" : 54,
             "type" : "SCALAR"
         },
         {
@@ -346,38 +341,38 @@
         },
         {
             "buffer" : 0,
-            "byteLength" : 720,
+            "byteLength" : 648,
             "byteOffset" : 6996
         },
         {
             "buffer" : 0,
-            "byteLength" : 480,
-            "byteOffset" : 7716
+            "byteLength" : 432,
+            "byteOffset" : 7644
         },
         {
             "buffer" : 0,
-            "byteLength" : 120,
-            "byteOffset" : 8196
+            "byteLength" : 108,
+            "byteOffset" : 8076
         },
         {
             "buffer" : 0,
             "byteLength" : 288,
-            "byteOffset" : 8316
+            "byteOffset" : 8184
         },
         {
             "buffer" : 0,
             "byteLength" : 192,
-            "byteOffset" : 8604
+            "byteOffset" : 8472
         },
         {
             "buffer" : 0,
             "byteLength" : 48,
-            "byteOffset" : 8796
+            "byteOffset" : 8664
         }
     ],
     "buffers" : [
         {
-            "byteLength" : 8844,
+            "byteLength" : 8712,
             "uri" : "snake.bin"
         }
     ]
