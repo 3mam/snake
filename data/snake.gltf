@@ -239,15 +239,15 @@
         {
             "bufferView" : 9,
             "componentType" : 5126,
-            "count" : 54,
+            "count" : 30,
             "max" : [
-                0.08242415636777878,
-                0.09517522156238556,
-                0.04000019282102585
+                0.10000007599592209,
+                0.10000001639127731,
+                0.042650192975997925
             ],
             "min" : [
-                -0.08242415636777878,
-                -0.09517522156238556,
+                -0.10000000149011612,
+                -0.10000000149011612,
                 -0.042650386691093445
             ],
             "type" : "VEC3"
@@ -255,13 +255,13 @@
         {
             "bufferView" : 10,
             "componentType" : 5126,
-            "count" : 54,
+            "count" : 30,
             "type" : "VEC2"
         },
         {
             "bufferView" : 11,
             "componentType" : 5123,
-            "count" : 54,
+            "count" : 30,
             "type" : "SCALAR"
         },
         {
@@ -341,38 +341,38 @@
         },
         {
             "buffer" : 0,
-            "byteLength" : 648,
+            "byteLength" : 360,
             "byteOffset" : 6996
         },
         {
             "buffer" : 0,
-            "byteLength" : 432,
-            "byteOffset" : 7644
+            "byteLength" : 240,
+            "byteOffset" : 7356
         },
         {
             "buffer" : 0,
-            "byteLength" : 108,
-            "byteOffset" : 8076
+            "byteLength" : 60,
+            "byteOffset" : 7596
         },
         {
             "buffer" : 0,
             "byteLength" : 288,
-            "byteOffset" : 8184
+            "byteOffset" : 7656
         },
         {
             "buffer" : 0,
             "byteLength" : 192,
-            "byteOffset" : 8472
+            "byteOffset" : 7944
         },
         {
             "buffer" : 0,
             "byteLength" : 48,
-            "byteOffset" : 8664
+            "byteOffset" : 8136
         }
     ],
     "buffers" : [
         {
-            "byteLength" : 8712,
+            "byteLength" : 8184,
             "uri" : "snake.bin"
         }
     ]
