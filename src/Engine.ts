@@ -28,7 +28,7 @@ export class Engine {
 		const loop = () => {
 			now = performance.now()
 			delta = delta + Math.min(1, (now - last) / 1000)
-			gl.clearColor(0.0, 0.5, 0.0, 1.0)
+			gl.clearColor(0.0, 0.0, 0.0, 1.0)
 			gl.clearStencil(0)
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 
