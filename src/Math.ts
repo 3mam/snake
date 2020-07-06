@@ -44,6 +44,18 @@ export class Vec3 {
 
 	}
 
+	equal(n: Vec3, margin: number): boolean {
+		const dx = this.x - n.x
+		const dy = this.y - n.y
+		const dz = this.z - n.z
+		const distance = Math.sqrt(dx * dx + dy * dy + dz * dz)
+
+		if (distance < margin) {
+			return true
+		}
+		return false
+	}
+
 	directionAngle(angle: number): Vec3 {
 		const rad = angle * Math.PI / 180
 		return new Vec3(this.x + Math.sin(rad), this.y + Math.cos(rad), 0)
@@ -331,4 +343,8 @@ export function getRandomInt(min: number, max: number): number {
 	min = Math.ceil(min)
 	max = Math.floor(max)
 	return Math.floor(Math.random() * (max - min)) + min
+}
+
+export function angleToRadiant(angle: number): number {
+	return angle * Math.PI / 180
 }
