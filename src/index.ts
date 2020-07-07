@@ -4,7 +4,7 @@ import { gl, glInit, canvas } from './gl'
 import { loadNode, Node } from './Node'
 import { BinaryReader } from './BinaryReader'
 import { glbLoad, gltfLoad } from './glTF'
-import { Mat4, Vec3, getRandomInt } from './Math'
+import { Mat4, Vec3, getRandomInt, angleToRadiant } from './Math'
 import { Camera, CameraType } from './Camera'
 import { Engine, ILoop } from './Engine'
 import { Circle } from './Collision'
@@ -39,6 +39,7 @@ function randomBetween(min: number, max: number) {
 
 enum EDirection {
 	up,
+	down,
 	left,
 	right,
 }
@@ -53,6 +54,7 @@ class SnakePart {
 	node: Node
 	view: Mat4
 	position: Vec3
+	origin: Vec3
 	collision: Circle
 
 	constructor(node: Node, position: Vec3) {
@@ -62,25 +64,72 @@ class SnakePart {
 		this.cell = 0
 		this.node = node
 		this.view = new Mat4
-		this.position = this.node.origin.translation.add(position)
-		this.collision = new Circle(this.position.x, this.position.y, 0.005)
-		this.rotateSpeed = 10
+		this.position = position
+		this.origin = this.node.origin.translation
+		this.position = this.position.add(this.node.origin.translation)
+		this.collision = new Circle(this.position.x, this.position.y, 0.0005)
+		this.rotateSpeed = 20
 	}
 
 	moveTo(n: number) {
 		this.position = this.position.add(new Vec3(0, 0, 0).reversDirectionRadius(this.rotate).multiply(n))
 	}
 
-	update(speed: number) {
-		this.position = this.position.add(new Vec3().directionRadius(this.rotate).multiply(speed))
+	collisionWitch(v: Vec3): boolean {
+		var THRESHOLD = 0.1
 
+		//Method 1
+		var x1 = this.position.x
+		for (var i = 1; i <= 11; i++) {
+			x1 += 0.1
+		}
+
+		//Method 2
+		var x2 = v.x * 11
+
+		var y1 = this.position.y
+		for (var i = 1; i <= 11; i++) {
+			y1 += 0.1
+		}
+
+		//Method 2
+		var y2 = v.y * 11
+
+		if (Math.abs(x1 - x2) < THRESHOLD && Math.abs(y1 - y2) < THRESHOLD)
+			return true
+
+		return false
+	}
+
+	update(speed: number) {
+		/*
 		if (this.rotate < this.angle && this.rotateDirection == EDirection.left)
 			this.angle += -speed * this.rotateSpeed
 		else if (this.rotate > this.angle && this.rotateDirection == EDirection.right)
 			this.angle += speed * this.rotateSpeed
 		else
-			this.angle = this.rotate
-
+			
+			*/
+		switch (this.rotateDirection) {
+			case EDirection.up:
+				this.position = this.position.add(new Vec3(0, 0.01, 0))
+				this.rotate = angleToRadiant(0)
+				break
+			case EDirection.down:
+				this.position = this.position.add(new Vec3(0, -0.01, 0))
+				this.rotate = angleToRadiant(180)
+				break
+			case EDirection.left:
+				this.position = this.position.add(new Vec3(-0.01, 0, 0))
+				this.rotate = angleToRadiant(-90)
+				break
+			case EDirection.right:
+				this.position = this.position.add(new Vec3(0.01, 0, 0))
+				this.rotate = angleToRadiant(90)
+				break
+		}
+		this.collision = this.collision.moveTo(this.position)
+		this.angle = this.rotate
 		this.view.identity()
 		this.view.translate(this.position)
 		this.view.rotateZ(this.angle)
@@ -88,7 +137,7 @@ class SnakePart {
 	}
 
 	collisionTo(v: Circle): boolean {
-		if (this.collision.moveTo(this.position).collisionTo(v))
+		if (this.collision.collisionTo(v))
 			return true
 		return false
 	}
@@ -113,13 +162,14 @@ window.onload = () => {
 		snakeSize: number
 		powerUpCell: number
 		stack: {
-			cell: number
+			position: Vec3
 			direction: number
 		}[]
 		in: number
 
 		async init() {
 			const model = await loadNode('./data/snake.gltf')
+			console.log(model)
 			this.arena = model.get('arena')
 
 			this.cam = new Camera('main')
@@ -131,13 +181,9 @@ window.onload = () => {
 				for (let x = 0; x < 16; x++) {
 					const mat4 = new Mat4()
 					let wall = -0.05
-					//if (x === 0 || x === 31 || y === 0 || y === 31) wall = 0.05
-					mat4.translate(new Vec3(x * 0.142764, x % 2 == 0 ? y * 0.164848 + 0.082424 : y * 0.164848, wall))
-					mat4.rotateZ(90 * Math.PI / 180)
+					mat4.translate(new Vec3(x * 0.21, y * 0.21, wall))
 					area[(x * 16) + y] = mat4
-
-					this.arenaCollision[(x * 16) + y] = new Circle(x * 0.142764, x % 2 == 0 ? y * 0.164848 + 0.082424 : y * 0.164848, 0.0005)
-
+					this.arenaCollision[(x * 16) + y] = new Circle(x * 0.21, y * 0.21, 0.0005)
 					wall = 0.0
 				}
 			}
@@ -148,31 +194,52 @@ window.onload = () => {
 			const pos = this.arenaCollision.length / 2
 			this.controlCollision = new Circle(this.arenaCollision[pos].x, this.arenaCollision[pos].y, 0.1)
 			window.addEventListener('keydown', (ev) => {
-				if (ev.key === 'a')
+				if (ev.key === 'a' && this.direction !== EDirection.right && this.direction !== EDirection.left) {
 					this.direction = EDirection.left
+					this.stack.unshift({ position: this.head.position, direction: this.direction })
 
-				if (ev.key === 'd')
+				}
+
+				if (ev.key === 'd' && this.direction !== EDirection.left && this.direction !== EDirection.right) {
 					this.direction = EDirection.right
+					this.stack.unshift({ position: this.head.position, direction: this.direction })
+				}
 
+
+				if (ev.key === 'w' && this.direction !== EDirection.down && this.direction !== EDirection.up) {
+					this.direction = EDirection.up
+					this.stack.unshift({ position: this.head.position, direction: this.direction })
+				}
+
+				if (ev.key === 's' && this.direction !== EDirection.up && this.direction !== EDirection.down) {
+					this.direction = EDirection.down
+					this.stack.unshift({ position: this.head.position, direction: this.direction })
+				}
+
+				//console.log(this.stack[0].position)
 
 			})
 			window.addEventListener('keyup', (ev) => {
 			})
 
+			this.direction = EDirection.up
 			this.pressKey = false
 			this.midleSnakeInstance = new Array(50)
 			this.midleSnakeNode = new Array(50)
 			this.midle = model.get('midle')
-			for (let i = 0; i < 100; i++) {
+			for (let i = 0; i < 1; i++) {
 				this.midleSnakeInstance[i] = new Mat4
-				this.midleSnakeInstance[i].scale(new Vec3)
+				//this.midleSnakeInstance[i].scale(new Vec3)
 				this.midleSnakeNode[i] = new SnakePart(this.midle, new Vec3(this.arenaCollision[pos].x, this.arenaCollision[pos].y, 0.05))
+				this.midleSnakeNode[i].id = i
+				this.midleSnakeNode[i].rotateDirection = EDirection.up
 			}
-
 			this.midle.createInstance(this.midleSnakeInstance)
 
 			this.head = new SnakePart(model.get('head'), new Vec3(this.arenaCollision[pos].x, this.arenaCollision[pos].y, 0.05))
+			this.head.rotateDirection = EDirection.up
 			this.tail = new SnakePart(model.get('tail'), new Vec3(this.arenaCollision[pos].x, this.arenaCollision[pos].y, 0.05))
+			this.tail.rotateDirection = EDirection.up
 			this.up = model.get('up')
 			const random = getRandomInt(0, this.arenaCollision.length)
 			this.powerUpCell = random
@@ -182,116 +249,51 @@ window.onload = () => {
 			this.stack = new Array()
 			this.snakeSize = 1
 			this.in = 0.1
+
 		}
 
 		update(delta) {
 			let speed = this.speed * delta
 			this.cam.identity()
 			this.cam.rotation(new Vec3(0.7, 0, 0))
-			this.cam.position(new Vec3(0, 0.8, -1).subtract(this.head.position))
-			this.in += 0.01
+			this.cam.position(new Vec3(0, 1, -2).subtract(this.head.position))
 
-			//this.cam.position(new Vec3(-4 - this.x, -4 - this.y, - 1))
+			switch (this.direction) {
+				case EDirection.up:
+					this.head.rotateDirection = EDirection.up
+					break
+				case EDirection.down:
+					this.head.rotateDirection = EDirection.down
+					break
+				case EDirection.left:
+					this.head.rotateDirection = EDirection.left
+					break
+				case EDirection.right:
+					this.head.rotateDirection = EDirection.right
+					break
+			}
 
+			this.midleSnakeNode.forEach((m) => {
+				this.stack.forEach((s, i) => {
+					if (m.position.equal(s.position, 0.005)) {
+						m.position = s.position
+						m.rotateDirection = s.direction
+					}
+					if (this.tail.position.equal(s.position, 0.005)) {
+						this.tail.position = s.position
+						this.tail.rotateDirection = s.direction
+						this.stack.pop()
+					}
+				})
+
+			})
+			this.head.position.z = 0.05
 			this.head.update(speed)
 			this.midleSnakeNode.forEach((m) => {
 				m.update(speed)
 			})
 			this.tail.update(speed)
-
-
-			this.arenaCollision.forEach((v, i) => {
-				if (this.pressKey) {
-					this.pressKey = false
-
-				}
-
-				if (this.head.collisionTo(v) && this.cell !== i) {
-					if (i === this.powerUpCell) {
-						const lastNode = this.midleSnakeNode[this.snakeSize]
-						lastNode.id = this.snakeSize
-						lastNode.moveTo(-lastNode.node.origin.translation.y * this.snakeSize)
-						this.tail.moveTo(-lastNode.node.origin.translation.y)
-						this.snakeSize++
-						const random = getRandomInt(0, this.arenaCollision.length)
-						this.powerUpCell = random
-						this.up.identity()
-						this.up.position(new Vec3(this.arenaCollision[random].x, this.arenaCollision[random].y, 0.1))
-						this.up.scale(new Vec3(0.05, 0.05, 0.05))
-					}
-					switch (this.direction) {
-						case EDirection.left:
-							this.head.rotateDirection = EDirection.left
-							this.head.rotate += -60 * Math.PI / 180
-							break
-						case EDirection.right:
-							this.head.rotateDirection = EDirection.right
-							this.head.rotate += 60 * Math.PI / 180
-							break
-						case EDirection.up:
-							break
-					}
-					this.direction = EDirection.up
-
-					this.head.position = new Vec3(v.x, v.y, 0.05)
-					this.cell = i
-					this.stack.unshift({ cell: i, direction: this.head.rotate })
-
-					//console.log(this.stack)
-				}
-
-				this.stack.forEach((o) => {
-					this.midleSnakeNode.forEach((m) => {
-						if (m.collisionTo(v) && o.cell === i && o.cell !== m.cell) {
-							m.rotate = o.direction
-							m.position = new Vec3(v.x, v.y, 0.05)
-							m.cell = o.cell
-							//console.log(this.midle.position)
-						}
-					})
-
-					if (this.tail.collisionTo(v) && o.cell === i) {
-						this.tail.rotate = o.direction
-						this.tail.position = new Vec3(v.x, v.y, 0.05)
-						this.stack.pop()
-					}
-				})
-			})
-
-			// this.head.identity()
-			// this.head.position(this.headPosition)
-			// this.head.rotation(new Vec3(0, 0, this.angle))
-
-			// this.midle.identity()
-			// const midle = new Mat4()
-			// midle.translate(this.midle.origin.translation.add(this.headPosition))
-			// midle.rotateZ(this.angle)
-			// this.midle.updateInstance(0, midle)
-			// this.tail.identity()
-			// this.tail.position(this.tail.origin.translation.add(this.headPosition))
-			// this.tail.rotation(new Vec3(0, 0, this.angle))
-
-			// this.arenaCollision.forEach((v, i) => {
-			// 	if (this.headCollision.moveTo(this.headPosition).collisionTo(v) && this.id !== i) {
-			// 		this.rotate += -60 * Math.PI / 180
-			// 		this.id = i
-			// 		this.headPosition = new Vec3(v.x, v.y, 0.05)
-			// 		//this.stack.unshift({ cell: this.id, direction: -60 * Math.PI / 180 })
-			// 		//console.log(this.stack)
-			// 		const test = new Mat4()
-			// 		test.translateZ(0.1)
-			// 		this.arena.updateInstance(i, test)
-			// 	}
-			// })
-
-			// if (this.rotate < this.angle) {
-			// 	this.angle += -this.speed * 10
-			// } else {
-			// 	this.angle = this.rotate
-			// }
-
-
-
+			//console.log(this.head.position, this.midleSnakeNode[0].position)
 		}
 
 		render(delta) {
