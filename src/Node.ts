@@ -78,6 +78,7 @@ export class Node implements ITranslate {
 
 export async function loadNode(name: string): Promise<Map<string, Node>> {
 	const file = await gltfLoad(name)
+	console.log(file)
 	const nodes: Map<string, Node> = new Map()
 	const shader = new Shader()
 	const texture = gl.createTexture()
@@ -114,17 +115,23 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 
 		obj.texture = texture
 
-		obj.origin.translation.x = v.translation == void (0) ? 0 : v.translation[0]
-		obj.origin.translation.y = v.translation == void (0) ? 0 : v.translation[1]
-		obj.origin.translation.z = v.translation == void (0) ? 0 : v.translation[2]
+		obj.origin.translation = new Vec3(
+			v.translation == void (0) ? 0 : v.translation[0],
+			v.translation == void (0) ? 0 : v.translation[1],
+			v.translation == void (0) ? 0 : v.translation[2],
+		)
 
-		obj.origin.rotate.x = v.rotation == void (0) ? 0 : v.rotation[0]
-		obj.origin.rotate.y = v.rotation == void (0) ? 0 : v.rotation[1]
-		obj.origin.rotate.z = v.rotation == void (0) ? 0 : v.rotation[2]
+		obj.origin.rotate = new Vec3(
+			v.rotation == void (0) ? 0 : v.rotation[0],
+			v.rotation == void (0) ? 0 : v.rotation[1],
+			v.rotation == void (0) ? 0 : v.rotation[2],
+		)
 
-		obj.origin.scale.x = v.scale == void (0) ? 1 : v.scale[0]
-		obj.origin.scale.y = v.scale == void (0) ? 1 : v.scale[1]
-		obj.origin.scale.z = v.scale == void (0) ? 1 : v.scale[2]
+		obj.origin.scale = new Vec3(
+			v.scale == void (0) ? 1 : v.scale[0],
+			v.scale == void (0) ? 1 : v.scale[1],
+			v.scale == void (0) ? 1 : v.scale[2],
+		)
 
 		const position = file.meshes[v.mesh].primitives[0].attributes.POSITION
 		const positionBufferView = file.accessors[position].bufferView

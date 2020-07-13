@@ -6,48 +6,58 @@ export interface ITranslate {
 }
 
 export class Vec3 {
-	x: number
-	y: number
-	z: number
+	private xyz: Float32Array
 	constructor(x = 0, y = 0, z = 0) {
-		this.x = x
-		this.y = y
-		this.z = z
+		this.xyz = new Float32Array(3)
+		this.xyz[0] = x
+		this.xyz[1] = y
+		this.xyz[2] = z
+
+	}
+
+	get x() {
+		return this.xyz[0]
+	}
+	get y() {
+		return this.xyz[1]
+	}
+	get z() {
+		return this.xyz[2]
 	}
 
 	add(n: Vec3 | number): Vec3 {
 		if (typeof n === 'number')
-			return new Vec3(this.x + n, this.y + n, this.z + n)
+			return new Vec3(this.xyz[0] + n, this.xyz[1] + n, this.xyz[2] + n)
 		if (n instanceof Vec3)
-			return new Vec3(this.x + n.x, this.y + n.y, this.z + n.z)
+			return new Vec3(this.xyz[0] + n.xyz[0], this.xyz[1] + n.xyz[1], this.xyz[2] + n.xyz[2])
 	}
 
 	subtract(n: Vec3 | number): Vec3 {
 		if (typeof n === 'number')
-			return new Vec3(this.x - n, this.y - n, this.z - n)
+			return new Vec3(this.xyz[0] - n, this.xyz[1] - n, this.xyz[2] - n)
 		if (n instanceof Vec3)
-			return new Vec3(this.x - n.x, this.y - n.y, this.z - n.z)
+			return new Vec3(this.xyz[0] - n.xyz[0], this.xyz[1] - n.xyz[1], this.xyz[2] - n.xyz[2])
 	}
 
 	multiply(n: Vec3 | number): Vec3 {
 		if (typeof n === 'number')
-			return new Vec3(this.x * n, this.y * n, this.z * n)
+			return new Vec3(this.xyz[0] * n, this.xyz[1] * n, this.xyz[2] * n)
 		if (n instanceof Vec3)
-			return new Vec3(this.x * n.x, this.y * n.y, this.z * n.z)
+			return new Vec3(this.xyz[0] * n.xyz[0], this.xyz[1] * n.xyz[1], this.xyz[2] * n.xyz[2])
 	}
 
 	division(n: Vec3 | number): Vec3 {
 		if (typeof n === 'number')
-			return new Vec3(this.x / n, this.y / n, this.z / n)
+			return new Vec3(this.xyz[0] / n, this.xyz[1] / n, this.xyz[2] / n)
 		if (n instanceof Vec3)
-			return new Vec3(this.x / n.x, this.y / n.y, this.z / n.z)
+			return new Vec3(this.xyz[0] / n.xyz[0], this.xyz[1] / n.xyz[1], this.xyz[2] / n.xyz[2])
 
 	}
 
 	equal(n: Vec3, margin: number): boolean {
-		const dx = this.x - n.x
-		const dy = this.y - n.y
-		const dz = this.z - n.z
+		const dx = this.xyz[0] - n.xyz[0]
+		const dy = this.xyz[1] - n.xyz[1]
+		const dz = this.xyz[2] - n.xyz[2]
 		const distance = Math.sqrt(dx * dx + dy * dy + dz * dz)
 
 		if (distance < margin) {
@@ -58,20 +68,20 @@ export class Vec3 {
 
 	directionAngle(angle: number): Vec3 {
 		const rad = angle * Math.PI / 180
-		return new Vec3(this.x + Math.sin(rad), this.y + Math.cos(rad), 0)
+		return new Vec3(this.xyz[0] + Math.sin(rad), this.xyz[1] + Math.cos(rad), 0)
 	}
 
 	directionRadius(rad: number): Vec3 {
-		return new Vec3(this.x + Math.sin(rad), this.y + Math.cos(rad), 0)
+		return new Vec3(this.xyz[0] + Math.sin(rad), this.xyz[1] + Math.cos(rad), 0)
 	}
 
 	reversDirectionRadius(rad: number): Vec3 {
-		return new Vec3(this.x - Math.sin(rad), this.y - Math.cos(rad), 0)
+		return new Vec3(this.xyz[0] - Math.sin(rad), this.xyz[1] - Math.cos(rad), 0)
 	}
 
 	dot(v: Vec3): number {
 		const tmp = this.multiply(v)
-		return tmp.x + tmp.y + tmp.z
+		return tmp.xyz[0] + tmp.xyz[1] + tmp.xyz[2]
 	}
 
 	normalize(): Vec3 {
@@ -79,9 +89,9 @@ export class Vec3 {
 		const length = Math.sqrt(this.dot(this))
 		// make sure we don't divide by 0.
 		if (length > 0.00001) {
-			v.x = this.x / length
-			v.y = this.y / length
-			v.z = this.z / length
+			v.xyz[0] = this.xyz[0] / length
+			v.xyz[1] = this.xyz[1] / length
+			v.xyz[2] = this.xyz[2] / length
 		}
 		return v
 	}
