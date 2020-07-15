@@ -1,7 +1,6 @@
 import { Mat4 } from './Math'
 import { gl, createShader, createProgram, canvas } from './gl'
-import { CameraType, Camera } from './Camera'
-import { Node } from './Node'
+import { Camera } from './Camera'
 
 enum Type {
 	Vertex,

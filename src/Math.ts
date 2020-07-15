@@ -1,10 +1,3 @@
-export interface ITranslate {
-	position(pos: Vec3)
-	rotation(pos: Vec3)
-	scale(pos: Vec3)
-	identity()
-}
-
 export class Vec3 {
 	private xyz: Float32Array
 	constructor(x = 0, y = 0, z = 0) {
@@ -12,52 +5,81 @@ export class Vec3 {
 		this.xyz[0] = x
 		this.xyz[1] = y
 		this.xyz[2] = z
-
 	}
 
-	get x() {
+	private set x(value: number) {
+		this.xyz[0] = value
+	}
+
+	private get x() {
 		return this.xyz[0]
 	}
-	get y() {
+
+	private set y(value: number) {
+		this.xyz[1] = value
+	}
+
+	private get y() {
 		return this.xyz[1]
 	}
-	get z() {
+
+	private set z(value: number) {
+		this.xyz[2] = value
+	}
+
+	private get z() {
 		return this.xyz[2]
+	}
+
+	valueX() {
+		return this.x
+	}
+
+	valueY() {
+		return this.y
+	}
+
+	valueZ() {
+		return this.z
+	}
+
+	copy() {
+		return new Vec3(this.x, this.y, this.z)
 	}
 
 	add(n: Vec3 | number): Vec3 {
 		if (typeof n === 'number')
-			return new Vec3(this.xyz[0] + n, this.xyz[1] + n, this.xyz[2] + n)
+			return new Vec3(this.x + n, this.y + n, this.z + n)
 		if (n instanceof Vec3)
-			return new Vec3(this.xyz[0] + n.xyz[0], this.xyz[1] + n.xyz[1], this.xyz[2] + n.xyz[2])
+			return new Vec3(this.x + n.x, this.y + n.y, this.z + n.z)
 	}
 
 	subtract(n: Vec3 | number): Vec3 {
 		if (typeof n === 'number')
-			return new Vec3(this.xyz[0] - n, this.xyz[1] - n, this.xyz[2] - n)
+			return new Vec3(this.x - n, this.y - n, this.z - n)
 		if (n instanceof Vec3)
-			return new Vec3(this.xyz[0] - n.xyz[0], this.xyz[1] - n.xyz[1], this.xyz[2] - n.xyz[2])
+			return new Vec3(this.x - n.x, this.y - n.y, this.z - n.z)
 	}
 
 	multiply(n: Vec3 | number): Vec3 {
 		if (typeof n === 'number')
-			return new Vec3(this.xyz[0] * n, this.xyz[1] * n, this.xyz[2] * n)
+			return new Vec3(this.x * n, this.y * n, this.z * n)
 		if (n instanceof Vec3)
-			return new Vec3(this.xyz[0] * n.xyz[0], this.xyz[1] * n.xyz[1], this.xyz[2] * n.xyz[2])
+			return new Vec3(this.x * n.x, this.y * n.y, this.z * n.z)
 	}
 
 	division(n: Vec3 | number): Vec3 {
 		if (typeof n === 'number')
-			return new Vec3(this.xyz[0] / n, this.xyz[1] / n, this.xyz[2] / n)
+			return new Vec3(this.x / n, this.y / n, this.z / n)
 		if (n instanceof Vec3)
-			return new Vec3(this.xyz[0] / n.xyz[0], this.xyz[1] / n.xyz[1], this.xyz[2] / n.xyz[2])
+			return new Vec3(this.x / n.x, this.y / n.y, this.z / n.z)
 
 	}
 
 	equal(n: Vec3, margin: number): boolean {
-		const dx = this.xyz[0] - n.xyz[0]
-		const dy = this.xyz[1] - n.xyz[1]
-		const dz = this.xyz[2] - n.xyz[2]
+		const dx = this.x - n.x
+		const dy = this.y - n.y
+		const dz = this.z - n.z
 		const distance = Math.sqrt(dx * dx + dy * dy + dz * dz)
 
 		if (distance < margin) {
@@ -68,20 +90,20 @@ export class Vec3 {
 
 	directionAngle(angle: number): Vec3 {
 		const rad = angle * Math.PI / 180
-		return new Vec3(this.xyz[0] + Math.sin(rad), this.xyz[1] + Math.cos(rad), 0)
+		return new Vec3(this.x + Math.sin(rad), this.y + Math.cos(rad), 0)
 	}
 
 	directionRadius(rad: number): Vec3 {
-		return new Vec3(this.xyz[0] + Math.sin(rad), this.xyz[1] + Math.cos(rad), 0)
+		return new Vec3(this.x + Math.sin(rad), this.y + Math.cos(rad), 0)
 	}
 
 	reversDirectionRadius(rad: number): Vec3 {
-		return new Vec3(this.xyz[0] - Math.sin(rad), this.xyz[1] - Math.cos(rad), 0)
+		return new Vec3(this.x - Math.sin(rad), this.y - Math.cos(rad), 0)
 	}
 
 	dot(v: Vec3): number {
 		const tmp = this.multiply(v)
-		return tmp.xyz[0] + tmp.xyz[1] + tmp.xyz[2]
+		return tmp.x + tmp.y + tmp.z
 	}
 
 	normalize(): Vec3 {
@@ -89,9 +111,9 @@ export class Vec3 {
 		const length = Math.sqrt(this.dot(this))
 		// make sure we don't divide by 0.
 		if (length > 0.00001) {
-			v.xyz[0] = this.xyz[0] / length
-			v.xyz[1] = this.xyz[1] / length
-			v.xyz[2] = this.xyz[2] / length
+			v.x = this.x / length
+			v.y = this.y / length
+			v.z = this.z / length
 		}
 		return v
 	}
@@ -123,7 +145,7 @@ export class Mat4 {
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
-			v.x, v.y, v.z, 1,
+			v.valueX(), v.valueY(), v.valueZ(), 1,
 		])
 		this.multiply(this.mat, this.tmp)
 	}
@@ -158,11 +180,15 @@ export class Mat4 {
 		this.multiply(this.mat, this.tmp)
 	}
 
+	position(v: Vec3) {
+		this.translate(v)
+	}
+
 	scale(v: Vec3) {
 		this.tmp.set([
-			v.x, 0, 0, 0,
-			0, v.y, 0, 0,
-			0, 0, v.z, 0,
+			v.valueX(), 0, 0, 0,
+			0, v.valueY(), 0, 0,
+			0, 0, v.valueZ(), 0,
 			0, 0, 0, 1,
 		])
 		this.multiply(this.mat, this.tmp)
@@ -233,6 +259,12 @@ export class Mat4 {
 			0, 0, 0, 1,
 		])
 		this.multiply(this.mat, this.tmp)
+	}
+
+	rotation(v: Vec3) {
+		this.rotateX(v.valueX())
+		this.rotateY(v.valueY())
+		this.rotateZ(v.valueZ())
 	}
 
 	identity() {

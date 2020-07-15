@@ -1,17 +1,16 @@
 import { gl } from './gl'
 import { Shader, Color, BufferData } from './Shader'
 import { gltfLoad } from './glTF'
-import { Mat4, Vec3, ITranslate } from './Math'
+import { Mat4, Vec3 } from './Math'
 import { currentCamera } from './Camera'
 
-export class Node implements ITranslate {
+export class Node extends Mat4 {
 	texture: WebGLTexture
 	vertex: BufferData
 	uv: BufferData
 	instance: BufferData
 	shader: Shader
 	color: Color
-	view: Mat4
 	origin: {
 		translation: Vec3
 		scale: Vec3
@@ -19,31 +18,12 @@ export class Node implements ITranslate {
 	}
 
 	constructor() {
-		this.view = new Mat4()
+		super()
 		this.origin = {
 			translation: new Vec3,
 			scale: new Vec3,
 			rotate: new Vec3,
 		}
-	}
-
-	position(v: Vec3) {
-		this.view.translate(v)
-	}
-
-	rotation(v: Vec3) {
-		this.view.rotateX(v.x)
-		this.view.rotateY(v.y)
-		this.view.rotateZ(v.z)
-
-	}
-
-	scale(v: Vec3) {
-		this.view.scale(v)
-	}
-
-	identity() {
-		this.view.identity()
 	}
 
 	createInstance(mat4: Mat4[]) {
@@ -65,7 +45,7 @@ export class Node implements ITranslate {
 
 	render() {
 		this.shader.setTexture(this.texture)
-		this.shader.setViewport(this.view)
+		this.shader.setViewport(this)
 		this.shader.setCamera(currentCamera)
 		this.shader.setColor(this.color)
 		this.shader.setVertex(this.vertex)
@@ -78,7 +58,6 @@ export class Node implements ITranslate {
 
 export async function loadNode(name: string): Promise<Map<string, Node>> {
 	const file = await gltfLoad(name)
-	console.log(file)
 	const nodes: Map<string, Node> = new Map()
 	const shader = new Shader()
 	const texture = gl.createTexture()
@@ -110,7 +89,7 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 		const obj = new Node()
 		obj.color = { r: 1, g: 1, b: 1, a: 1 }
 		obj.shader = shader
-		obj.shader.setViewport(obj.view)
+		obj.shader.setViewport(obj)
 		obj.shader.setColor(obj.color)
 
 		obj.texture = texture

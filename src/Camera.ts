@@ -1,4 +1,4 @@
-import { Mat4, Vec3, ITranslate } from './Math'
+import { Mat4, Vec3 } from './Math'
 import { canvas } from './gl'
 
 export enum CameraType {
@@ -7,10 +7,9 @@ export enum CameraType {
 	None,
 }
 
-export class Camera implements ITranslate {
+export class Camera extends Mat4 {
 	private fov: number
 	private type: CameraType
-	private view: Mat4
 	private distance: {
 		near: number
 		far: number
@@ -19,6 +18,7 @@ export class Camera implements ITranslate {
 
 	private name: string
 	constructor(name: string, type = CameraType.Perspective, fov = 70, near = 0.001, far = 20) {
+		super()
 		this.name = name
 		this.fov = fov
 		this.type = type
@@ -26,37 +26,21 @@ export class Camera implements ITranslate {
 			near: near,
 			far: far,
 		}
-		this.view = new Mat4()
 		this.aspect = 0
 	}
 
-	setAsCurrent() {
+	useAsCurrent() {
 		currentCamera = this
 	}
 
 	identity() {
 		this.aspect = canvas.width / canvas.height
-		this.view.identity()
+		super.identity()
 		switch (this.type) {
 			case CameraType.Perspective:
-				this.view.perspective(this.fov, this.aspect, this.distance.near, this.distance.far)
+				this.perspective(this.fov, this.aspect, this.distance.near, this.distance.far)
 				break
 		}
-	}
-
-	position(v: Vec3) {
-		this.view.translate(v)
-	}
-
-	rotation(v: Vec3) {
-		this.view.rotateX(v.x)
-		this.view.rotateY(v.y)
-		this.view.rotateZ(v.z)
-
-	}
-
-	scale(v: Vec3) {
-		this.view.scale(v)
 	}
 
 	setFov(fov: number) {
@@ -64,11 +48,11 @@ export class Camera implements ITranslate {
 	}
 
 	zoom(value: number) {
-		this.view.scale(new Vec3(value, value, value))
+		this.scale(new Vec3(value, value, value))
 	}
 
 	getView(): Mat4 {
-		return this.view
+		return this
 	}
 }
 
