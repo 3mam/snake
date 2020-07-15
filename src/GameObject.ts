@@ -9,37 +9,63 @@ export enum EDirection {
 }
 
 export class GameObject {
-	rotate: number
-	angle: number
-	rotateSpeed: number
-	rotateDirection: EDirection
-	id: number
-	cell: number
-	node: Node
-	view: Mat4
-	position: Vec3
-	origin: Vec3
-	scale: Vec3
-
-	constructor(node: Node, position: Vec3) {
-		this.rotate = 0
-		this.angle = 0
-		this.id = 0
-		this.cell = 0
+	private node: Node
+	private view: Mat4
+	private position: Vec3
+	private size: Vec3
+	private rotate: number
+	private direction: EDirection
+	private id: number
+	private parent: GameObject
+	private trace: {
+		position: Vec3
+		direction: EDirection
+	}[]
+	constructor(node: Node, position: Vec3, parent: GameObject = null, id: number = 0) {
 		this.node = node
+		this.id = id
+		this.rotate = 0
+		this.trace = new Array()
+		this.parent = parent
+		this.direction = EDirection.up
+		this.position = position.add(node.origin.translation)
+		this.size = node.origin.scale
 		this.view = new Mat4
-		this.scale = this.node.origin.scale
-		this.origin = this.node.origin.translation
-		this.position = position
-		this.position = this.position.add(this.node.origin.translation)
-		this.rotateSpeed = 20
+		for (let i = 0; i < 5; i++) {
+			this.trace.unshift({ position: this.position, direction: this.rotate })
+		}
 	}
 
-	moveTo(n: number) {
-		this.position = this.position.add(new Vec3(0, 0, 0).reversDirectionRadius(this.rotate).multiply(n))
+	lastPosition() {
+		return this.trace.pop()
 	}
-	multiplyPosition(value: number) {
-		switch (this.rotateDirection) {
+
+	currentPosition() {
+		return this.position
+	}
+
+	changeCurrentPosition(position: Vec3) {
+		this.position = position
+	}
+
+	callParent() {
+		return this.parent
+	}
+
+	lookDirection(look: EDirection) {
+		this.direction = look
+	}
+
+	rotateAt(value: number) {
+		this.rotate = value
+	}
+
+	resize(value: Vec3) {
+		this.size = value
+	}
+
+	move(value: number) {
+		switch (this.direction) {
 			case EDirection.up:
 				this.position = this.position.add(new Vec3(0, value, 0))
 				this.rotate = angleToRadiant(0)
@@ -58,22 +84,18 @@ export class GameObject {
 				break
 		}
 	}
-	update(speed: number) {
-		/*
-		if (this.rotate < this.angle && this.rotateDirection == EDirection.left)
-			this.angle += -speed * this.rotateSpeed
-		else if (this.rotate > this.angle && this.rotateDirection == EDirection.right)
-			this.angle += speed * this.rotateSpeed
-		else
-			
-			*/
-		this.multiplyPosition(speed)
-		this.angle = this.rotate
+
+	update() {
+		this.trace.unshift({ position: this.position, direction: this.rotate })
 		this.view.identity()
 		this.view.translate(this.position)
-		this.view.scale(this.scale)
-		this.view.rotateZ(this.angle)
+		this.view.scale(this.size)
+		this.view.rotateZ(this.rotate)
 		this.node.updateInstance(this.id, this.view)
+	}
+
+	render() {
+		this.node.render()
 	}
 
 }
