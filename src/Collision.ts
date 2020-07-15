@@ -23,6 +23,6 @@ export class Circle {
 	}
 
 	moveTo(v: Vec3): Circle {
-		return new Circle(v.x, v.y, this.r)
+		return new Circle(v.valueX(), v.valueY(), this.r)
 	}
 }
