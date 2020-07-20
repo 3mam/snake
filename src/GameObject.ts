@@ -21,23 +21,34 @@ export class GameObject {
 		position: Vec3
 		direction: EDirection
 	}[]
+	private tracePosition: {
+		start: number
+		end: number
+		gap: number
+	}
+
 	constructor(node: Node, position: Vec3, parent: GameObject = null, id: number = 0) {
 		this.node = node
 		this.id = id
 		this.rotate = 0
-		this.trace = new Array()
+		this.trace = new Array(16)
 		this.parent = parent
 		this.direction = EDirection.up
 		this.position = position.add(node.origin.translation)
 		this.size = node.origin.scale
 		this.view = new Mat4
-		for (let i = 0; i < 5; i++) {
-			this.trace.unshift({ position: this.position, direction: this.rotate })
+		this.tracePosition = {
+			start: 5,
+			end: 0,
+			gap: 5,
 		}
+
+		this.trace.fill({ position: this.position, direction: this.rotate })
+
 	}
 
 	lastPosition() {
-		return this.trace.pop()
+		return this.trace[this.tracePosition.end]
 	}
 
 	currentPosition() {
@@ -48,8 +59,16 @@ export class GameObject {
 		this.position = position
 	}
 
+	changeParent(parent: GameObject) {
+		this.parent = parent
+	}
+
 	callParent() {
 		return this.parent
+	}
+
+	changeSize(size: Vec3) {
+		this.size = size
 	}
 
 	lookDirection(look: EDirection) {
@@ -86,7 +105,14 @@ export class GameObject {
 	}
 
 	update() {
-		this.trace.unshift({ position: this.position, direction: this.rotate })
+		this.trace[this.tracePosition.start] = { position: this.position, direction: this.rotate }
+		this.tracePosition.start++
+		this.tracePosition.end++
+		this.tracePosition.start > this.tracePosition.gap ? this.tracePosition.start = 0 : null
+		this.tracePosition.end > this.tracePosition.gap ? this.tracePosition.end = 0 : null
+
+
+
 		this.view.identity()
 		this.view.translate(this.position)
 		this.view.scale(this.size)

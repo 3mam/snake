@@ -96,7 +96,7 @@ window.onload = () => {
 
 			window.addEventListener('keydown', (ev) => {
 				if (ev.key === 'e') {
-					this.speed += 0.1
+					this.speed = 0
 				}
 
 				if (ev.key === 'a' && this.direction !== EDirection.right && this.direction !== EDirection.left) {
@@ -153,27 +153,25 @@ window.onload = () => {
 			this.speed = 1.1
 
 			this.pos2D.x = width / 2
-			this.pos2D.y = height / 2
+			this.pos2D.y = 0
 
 			let pos = this.arenaSpawnPoint[this.pos2D.position].copy()
 			pos = pos.add(new Vec3(0, 0, 0.05))
 			this.direction = EDirection.up
-			this.midleSnakeInstance = new Array(50)
-			this.midleSnakeNode = new Array(50)
+			const snakeLength = 50
+			this.midleSnakeInstance = new Array(snakeLength)
+			this.midleSnakeNode = new Array(snakeLength)
 			this.head = new GameObject(model.get('head'), pos)
 			let midle = model.get('midle')
 
-			for (let i = 0; i < 100; i++) {
+			for (let i = 0; i < snakeLength; i++) {
 				this.midleSnakeInstance[i] = new Mat4
-				//this.midleSnakeInstance[i].scale(new Vec3)
 				this.midleSnakeNode[i] = new GameObject(midle, pos, i === 0 ? this.head : this.midleSnakeNode[i - 1], i)
-				this.midleSnakeNode[i].lookDirection(EDirection.up)
 			}
 			midle.createInstance(this.midleSnakeInstance)
 
 			this.head.lookDirection(EDirection.up)
-			this.tail = new GameObject(model.get('tail'), pos)
-			this.tail.lookDirection(EDirection.up)
+			this.tail = new GameObject(model.get('tail'), pos, this.midleSnakeNode[0])
 			const random = getRandomInt(0, this.arenaSpawnPoint.length)
 			this.up = new GameObject(model.get('up'), new Vec3(this.arenaSpawnPoint[random].valueX(), this.arenaSpawnPoint[random].valueY()))
 			this.up.resize(new Vec3(0.05, 0.05, 0.05))
@@ -186,30 +184,31 @@ window.onload = () => {
 			this.cam.rotation(new Vec3(0.9, 0, angleToRadiant(0)))
 			this.cam.position(new Vec3(0, 2, -2).subtract(this.head.currentPosition()))
 
-			this.midleSnakeNode.forEach((m, i) => {
-				const ghost = m.callParent().lastPosition()
-				m.changeCurrentPosition(ghost.position)
-				m.rotateAt(ghost.direction)
-				m.update()
-			})
 			this.head.lookDirection(this.direction)
 			this.head.move(speed)
-			//this.head.speed = speed
 
-			//this.stack.unshift({ position: this.head.position.clone, direction: this.head.rotate })
+			this.midleSnakeNode.forEach((m, i) => {
+				const parentLastState = m.callParent().lastPosition()
+				m.changeCurrentPosition(parentLastState.position)
+				m.rotateAt(parentLastState.direction)
+				m.changeSize(this.snakeSize > i ? new Vec3(1, 1, 1) : new Vec3)
+				m.update()
+			})
+
+			const parentLastState = this.tail.callParent().lastPosition()
+			this.tail.changeCurrentPosition(parentLastState.position)
+			this.tail.rotateAt(parentLastState.direction)
+			this.tail.update()
+
 			this.head.update()
 
 			if (this.head.currentPosition().equal(this.up.currentPosition(), 0.1)) {
 				const random = getRandomInt(0, this.arenaSpawnPoint.length)
-				//this.up.position = new Vec3(this.arenaSpawnPoint[random].valueX(), this.arenaSpawnPoint[random].valueY())
-				//	this.tail.move(this.midleSnakeNode[0].origin.y)
-				//Object.assign(this.midleSnakeNode[this.snakeSize].position, this.midleSnakeNode[this.snakeSize - 1].position)
-				//this.midleSnakeNode[this.snakeSize].direction = this.midleSnakeNode[this.snakeSize - 1].direction
-				//this.midleSnakeNode[this.snakeSize].move(this.midleSnakeNode[0].origin.y)
+				this.up.changeCurrentPosition(this.arenaSpawnPoint[random])
+				this.tail.changeParent(this.midleSnakeNode[this.snakeSize])
 				this.snakeSize++
 			}
 
-			this.tail.update()
 			this.up.update()
 		}
 
