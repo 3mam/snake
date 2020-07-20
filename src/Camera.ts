@@ -15,8 +15,8 @@ export class Camera extends Mat4 {
 		far: number
 	}
 	private aspect: number
-
 	private name: string
+
 	constructor(name: string, type = CameraType.Perspective, fov = 70, near = 0.001, far = 20) {
 		super()
 		this.name = name
@@ -34,8 +34,8 @@ export class Camera extends Mat4 {
 	}
 
 	identity() {
-		this.aspect = canvas.width / canvas.height
 		super.identity()
+		this.aspect = canvas.width / canvas.height
 		switch (this.type) {
 			case CameraType.Perspective:
 				this.perspective(this.fov, this.aspect, this.distance.near, this.distance.far)
