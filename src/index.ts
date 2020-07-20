@@ -3,7 +3,7 @@ import './index.html'
 import { loadNode, Node } from './Node'
 import { Mat4, Vec3, getRandomInt, angleToRadiant } from './Math'
 import { Camera } from './Camera'
-import { Engine, ILoop } from './Engine'
+import { Engine } from './Engine'
 import { GameObject, EDirection } from './GameObject'
 
 class Counter {
@@ -75,7 +75,7 @@ class Vec2in1D {
 }
 
 window.onload = () => {
-	class Game implements ILoop {
+	class Game extends Engine {
 		head: GameObject
 		up: GameObject
 		tail: GameObject
@@ -88,6 +88,10 @@ window.onload = () => {
 		midleSnakeNode: GameObject[]
 		snakeSize: number
 		pos2D: Vec2in1D
+
+		constructor() {
+			super()
+		}
 
 		async init() {
 			const width = 64
@@ -221,7 +225,7 @@ window.onload = () => {
 
 		}
 	}
-	const engine = new Engine(new Game())
+	const engine = new Game()
 	engine.run()
 
 	//gl.stencilFunc(gl.ALWAYS, 1, 0xFF)

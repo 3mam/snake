@@ -1,15 +1,11 @@
 import { gl, glInit } from './gl'
 
-export interface ILoop {
-	init(): void
-	update(step: number): void
-	render(delta: number): void
-}
+export abstract class Engine {
+	abstract init(): void
+	abstract update(step: number): void
+	abstract render(delta: number): void
 
-export class Engine {
-	private loop
-	constructor(loop: ILoop) {
-		this.loop = loop
+	constructor() {
 		glInit('#glCanvas')
 		gl.enable(gl.DEPTH_TEST)
 		gl.enable(gl.STENCIL_TEST)
@@ -19,7 +15,7 @@ export class Engine {
 	}
 
 	async run() {
-		await this.loop.init()
+		await this.init()
 		let delta = 0
 		let now = 0
 		let last = 0
@@ -36,9 +32,9 @@ export class Engine {
 
 			while (delta > step) {
 				delta = delta - step
-				this.loop.update(step)
+				this.update(step)
 			}
-			this.loop.render(delta)
+			this.render(delta)
 			last = now
 			requestAnimationFrame(loop)
 		}
