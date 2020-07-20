@@ -1,34 +1,11 @@
 export class Vec3 {
-	private xyz: Float32Array
+	private x: number
+	private y: number
+	private z: number
 	constructor(x = 0, y = 0, z = 0) {
-		this.xyz = new Float32Array(3)
-		this.xyz[0] = x
-		this.xyz[1] = y
-		this.xyz[2] = z
-	}
-
-	private set x(value: number) {
-		this.xyz[0] = value
-	}
-
-	private get x() {
-		return this.xyz[0]
-	}
-
-	private set y(value: number) {
-		this.xyz[1] = value
-	}
-
-	private get y() {
-		return this.xyz[1]
-	}
-
-	private set z(value: number) {
-		this.xyz[2] = value
-	}
-
-	private get z() {
-		return this.xyz[2]
+		this.x = x
+		this.y = y
+		this.z = z
 	}
 
 	valueX() {
