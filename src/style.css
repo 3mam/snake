@@ -9,3 +9,81 @@
 	left: 0;
 	right: 0;
 }
+
+#fullScreen {
+	width: 40px;
+	height: 40px;
+	background: red;
+}
+
+.crossLeft {
+	position: absolute;
+	left: 1%;
+	top: 50px;
+}
+
+.crossRight {
+	position: absolute;
+	right: 200px;
+	top: 40px;
+}
+
+.left {
+	position: absolute;
+	top: 100px;
+}
+
+.left.button {
+	width: 0;
+	height: 0;
+	border-top: 30px solid transparent;
+	border-right: 50px solid rgba(255, 255, 255, 0.2);
+	border-bottom: 30px solid transparent;
+
+}
+
+.up {
+	position: absolute;
+	left: 50px;
+	top: 50px;
+}
+
+.up.button {
+	width: 0;
+	height: 0;
+	border-left: 30px solid transparent;
+	border-right: 30px solid transparent;
+	border-bottom: 50px solid rgba(255, 255, 255, 0.2);
+}
+
+.right {
+	position: absolute;
+	left: 110px;
+	top: 100px;
+}
+
+.right.button {
+	width: 0;
+	height: 0;
+	border-top: 30px solid transparent;
+	border-left: 50px solid rgba(255, 255, 255, 0.2);
+	border-bottom: 30px solid transparent;
+}
+
+.down {
+	position: absolute;
+	left: 50px;
+	top: 162px;
+}
+
+.down.button {
+	width: 0;
+	height: 0;
+	border-left: 30px solid transparent;
+	border-right: 30px solid transparent;
+	border-top: 50px solid rgba(255, 255, 255, 0.2);
+}
+
+#input {
+	position: relative;
+}

@@ -5,6 +5,7 @@ import { Mat4, Vec3, getRandomInt, angleToRadiant } from './Math'
 import { Camera } from './Camera'
 import { Engine } from './Engine'
 import { GameObject, EDirection } from './GameObject'
+import { canvas } from './gl'
 
 class Counter {
 	dir: number
@@ -98,6 +99,38 @@ window.onload = () => {
 			const height = 64
 			this.pos2D = new Vec2in1D(width, height, width / 2, height / 2)
 
+			const toggleFullScreen = () => {
+				if (!document.fullscreenElement) {
+					document.documentElement.requestFullscreen()
+				} else {
+					if (document.exitFullscreen) {
+						document.exitFullscreen()
+					}
+				}
+			}
+
+			document.querySelector('#input').addEventListener('click', (ev) => {
+				if (ev.target['id'] === 'fullScreen') {
+					toggleFullScreen()
+				}
+
+				if (ev.target['id'] === 'left' && this.direction !== EDirection.right && this.direction !== EDirection.left) {
+					this.direction = EDirection.left
+				}
+
+				if (ev.target['id'] === 'right' && this.direction !== EDirection.left && this.direction !== EDirection.right) {
+					this.direction = EDirection.right
+				}
+
+				if (ev.target['id'] === 'up' && this.direction !== EDirection.down && this.direction !== EDirection.up) {
+					this.direction = EDirection.up
+				}
+
+				if (ev.target['id'] === 'down' && this.direction !== EDirection.up && this.direction !== EDirection.down) {
+					this.direction = EDirection.down
+				}
+			})
+
 			window.addEventListener('keydown', (ev) => {
 				if (ev.key === 'e') {
 					this.speed = 0
@@ -110,7 +143,6 @@ window.onload = () => {
 				if (ev.key === 'd' && this.direction !== EDirection.left && this.direction !== EDirection.right) {
 					this.direction = EDirection.right
 				}
-
 
 				if (ev.key === 'w' && this.direction !== EDirection.down && this.direction !== EDirection.up) {
 					this.direction = EDirection.up
@@ -154,7 +186,7 @@ window.onload = () => {
 				}
 			}
 			this.arena.createInstance(area)
-			this.speed = 1.1
+			this.speed = 0.9
 
 			this.pos2D.x = width / 2
 			this.pos2D.y = 0
@@ -186,7 +218,10 @@ window.onload = () => {
 		update(delta) {
 			this.cam.identity()
 			this.cam.rotateX(0.9)
-			this.cam.position(new Vec3(0, 2, -2).subtract(this.head.currentPosition()))
+			this.cam.position(new Vec3(0, 2, -2).subtract(this.head.currentPosition().multiply(2)))
+			this.cam.zoom(2)
+
+
 
 			this.head.lookDirection(this.direction)
 			this.head.move(this.speed * delta)
