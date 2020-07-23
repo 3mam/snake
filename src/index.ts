@@ -170,12 +170,13 @@ window.onload = () => {
 
 			for (let i = 0; i < snakeLength; i++) {
 				this.midleSnakeInstance[i] = new Mat4
-				this.midleSnakeNode[i] = new GameObject(midle, pos, i === 0 ? this.head : this.midleSnakeNode[i - 1], i)
+				this.midleSnakeNode[i] = new GameObject(midle, pos, i == 0 ? true : false, i == 0 ? this.head : this.midleSnakeNode[i - 1], i)
+
 			}
 			midle.createInstance(this.midleSnakeInstance)
 
 			this.head.lookDirection(EDirection.up)
-			this.tail = new GameObject(model.get('tail'), pos, this.midleSnakeNode[0])
+			this.tail = new GameObject(model.get('tail'), pos, true, this.midleSnakeNode[0])
 			const random = getRandomInt(0, this.arenaSpawnPoint.length)
 			this.up = new GameObject(model.get('up'), new Vec3(this.arenaSpawnPoint[random].valueX(), this.arenaSpawnPoint[random].valueY()))
 			this.up.resize(new Vec3(0.05, 0.05, 0.05))
@@ -183,20 +184,23 @@ window.onload = () => {
 		}
 
 		update(delta) {
-			let speed = this.speed * delta
 			this.cam.identity()
-			this.cam.rotation(new Vec3(0.9, 0, angleToRadiant(0)))
+			this.cam.rotateX(0.9)
 			this.cam.position(new Vec3(0, 2, -2).subtract(this.head.currentPosition()))
 
 			this.head.lookDirection(this.direction)
-			this.head.move(speed)
+			this.head.move(this.speed * delta)
+
 
 			this.midleSnakeNode.forEach((m, i) => {
 				const parentLastState = m.callParent().lastPosition()
 				m.changeCurrentPosition(parentLastState.position)
 				m.rotateAt(parentLastState.direction)
-				m.changeSize(this.snakeSize > i ? new Vec3(1, 1, 1) : new Vec3)
+				this.snakeSize > i ? m.show() : m.hide()
 				m.update()
+				if (this.head.collisionWithObject(m, 0.02)) {
+					this.speed = 0
+				}
 			})
 
 			const parentLastState = this.tail.callParent().lastPosition()
@@ -206,7 +210,7 @@ window.onload = () => {
 
 			this.head.update()
 
-			if (this.head.currentPosition().equal(this.up.currentPosition(), 0.1)) {
+			if (this.head.collisionWithObject(this.up, 0.1)) {
 				const random = getRandomInt(0, this.arenaSpawnPoint.length)
 				this.up.changeCurrentPosition(this.arenaSpawnPoint[random])
 				this.tail.changeParent(this.midleSnakeNode[this.snakeSize])

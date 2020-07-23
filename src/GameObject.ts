@@ -26,8 +26,9 @@ export class GameObject {
 		end: number
 		gap: number
 	}
+	private visible: boolean
 
-	constructor(node: Node, position: Vec3, parent: GameObject = null, id: number = 0) {
+	constructor(node: Node, position: Vec3, visible: boolean = true, parent: GameObject = null, id: number = 0) {
 		this.node = node
 		this.id = id
 		this.rotate = 0
@@ -37,14 +38,32 @@ export class GameObject {
 		this.position = position.add(node.origin.translation)
 		this.size = node.origin.scale
 		this.view = new Mat4
+		this.visible = visible
 		this.tracePosition = {
 			start: 5,
 			end: 0,
 			gap: 5,
 		}
 
-		this.trace.fill({ position: this.position, direction: this.rotate })
+		this.trace.fill({ position: this.position.add(new Vec3(0.5, 0, 0)), direction: this.rotate })
 
+	}
+
+	collisionWithObject(o: GameObject, margin: number): boolean {
+		if (o.visible && this.visible) {
+			if (this.position.equal(o.position, margin)) {
+				return true
+			}
+		}
+		return false
+	}
+
+	show() {
+		this.visible = true
+	}
+
+	hide() {
+		this.visible = false
 	}
 
 	lastPosition() {
@@ -111,17 +130,18 @@ export class GameObject {
 		this.tracePosition.start > this.tracePosition.gap ? this.tracePosition.start = 0 : null
 		this.tracePosition.end > this.tracePosition.gap ? this.tracePosition.end = 0 : null
 
-
-
-		this.view.identity()
-		this.view.translate(this.position)
-		this.view.scale(this.size)
-		this.view.rotateZ(this.rotate)
-		this.node.updateInstance(this.id, this.view)
+		if (this.visible) {
+			this.view.identity()
+			this.view.translate(this.position)
+			this.view.scale(this.size)
+			this.view.rotateZ(this.rotate)
+			this.node.updateInstance(this.id, this.view)
+		}
 	}
 
 	render() {
-		this.node.render()
+		if (this.visible) {
+			this.node.render()
+		}
 	}
-
 }
