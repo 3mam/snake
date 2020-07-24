@@ -31,3 +31,8 @@ export function createProgram(vertexShader: WebGLShader, fragmentShader: WebGLSh
 	console.log(gl.getProgramInfoLog(program))
 	gl.deleteProgram(program)
 }
+
+export function canvasResize() {
+	canvas.width = window.innerWidth
+	canvas.height = window.innerHeight
+}
