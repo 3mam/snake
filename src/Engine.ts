@@ -1,4 +1,4 @@
-import { gl, glInit } from './gl'
+import { gl, glInit, canvas, canvasResize } from './gl'
 
 export abstract class Engine {
 	abstract init(): void
@@ -27,8 +27,8 @@ export abstract class Engine {
 			gl.clearColor(0.0, 0.0, 0.0, 1.0)
 			gl.clearStencil(0)
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
-
-			gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight)
+			canvasResize()
+			gl.viewport(0, 0, canvas.width, canvas.height)
 
 			while (delta > step) {
 				delta = delta - step

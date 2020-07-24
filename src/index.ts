@@ -5,7 +5,7 @@ import { Mat4, Vec3, getRandomInt, angleToRadiant } from './Math'
 import { Camera } from './Camera'
 import { Engine } from './Engine'
 import { GameObject, EDirection } from './GameObject'
-import { canvas } from './gl'
+import { canvasResize } from './gl'
 
 class Counter {
 	dir: number
@@ -76,6 +76,7 @@ class Vec2in1D {
 }
 
 window.onload = () => {
+
 	class Game extends Engine {
 		head: GameObject
 		up: GameObject
@@ -89,12 +90,15 @@ window.onload = () => {
 		midleSnakeNode: GameObject[]
 		snakeSize: number
 		pos2D: Vec2in1D
+		screenAngle: number
 
 		constructor() {
 			super()
 		}
 
 		async init() {
+			canvasResize()
+			this.screenAngle = window.screen.orientation.angle
 			const width = 64
 			const height = 64
 			this.pos2D = new Vec2in1D(width, height, width / 2, height / 2)
@@ -102,12 +106,20 @@ window.onload = () => {
 			const toggleFullScreen = () => {
 				if (!document.fullscreenElement) {
 					document.documentElement.requestFullscreen()
+					document.getElementById('dpad').style.visibility = 'visible'
 				} else {
 					if (document.exitFullscreen) {
 						document.exitFullscreen()
+						document.getElementById('dpad').style.visibility = 'hidden'
+
 					}
 				}
 			}
+
+			window.addEventListener('orientationchange', (ev) => {
+				//console.log(ev.target['screen']['orientation']['angle'])
+				this.screenAngle = ev.target['screen']['orientation']['angle']
+			})
 
 			document.querySelector('#input').addEventListener('click', (ev) => {
 				if (ev.target['id'] === 'fullScreen') {
@@ -218,13 +230,15 @@ window.onload = () => {
 			this.snakeSize = 1
 		}
 
+		camera(zoom: number) {
+			this.cam.position(new Vec3(0, 2, -2).subtract(this.head.currentPosition().multiply(zoom)))
+			this.cam.zoom(zoom)
+		}
+
 		update(delta) {
 			this.cam.identity()
 			this.cam.rotateX(0.9)
-			this.cam.position(new Vec3(0, 2, -2).subtract(this.head.currentPosition().multiply(2)))
-			this.cam.zoom(2)
-
-
+			this.screenAngle != 0 ? this.camera(2) : this.camera(1)
 
 			this.head.lookDirection(this.direction)
 			this.head.move(this.speed * delta)
@@ -267,6 +281,7 @@ window.onload = () => {
 
 		}
 	}
+
 	const engine = new Game()
 	engine.run()
 
