@@ -113,7 +113,9 @@ window.onload = () => {
 				if (ev.target['id'] === 'fullScreen') {
 					toggleFullScreen()
 				}
+			})
 
+			document.querySelector('#input').addEventListener('touchstart', (ev) => {
 				if (ev.target['id'] === 'left' && this.direction !== EDirection.right && this.direction !== EDirection.left) {
 					this.direction = EDirection.left
 				}
@@ -133,7 +135,8 @@ window.onload = () => {
 
 			window.addEventListener('keydown', (ev) => {
 				if (ev.key === 'e') {
-					this.speed = 0
+					console.log(document.fullscreenElement)
+
 				}
 
 				if (ev.key === 'a' && this.direction !== EDirection.right && this.direction !== EDirection.left) {
