@@ -40,13 +40,12 @@ export class GameObject {
 		this.view = new Mat4
 		this.visible = visible
 		this.tracePosition = {
-			start: 5,
+			start: 7,
 			end: 0,
-			gap: 5,
+			gap: 7,
 		}
 
-		this.trace.fill({ position: this.position.add(new Vec3(0.5, 0, 0)), direction: this.rotate })
-
+		this.trace.fill({ position: this.position.add(new Vec3(1, 1, 1)), direction: this.rotate })
 	}
 
 	collisionWithObject(o: GameObject, margin: number): boolean {
