@@ -1,8 +1,9 @@
 import { gl } from './gl'
 import { Shader, Color, BufferData } from './Shader'
-import { gltfLoad } from './glTF'
+import { glbLoad } from './glTF'
 import { Mat4, Vec3 } from './Math'
 import { currentCamera } from './Camera'
+import { BinaryReader } from './BinaryReader'
 
 export class Node extends Mat4 {
 	texture: WebGLTexture
@@ -57,10 +58,14 @@ export class Node extends Mat4 {
 }
 
 export async function loadNode(name: string): Promise<Map<string, Node>> {
-	const file = await gltfLoad(name)
+	const file = await glbLoad(name)
 	const nodes: Map<string, Node> = new Map()
 	const shader = new Shader()
 	const texture = gl.createTexture()
+	const binary = new BinaryReader(file.buffers[0].uri)
+	binary.setOffset(file.bufferViews[file.images[0].bufferView].byteOffset)
+	const blob = new Blob([binary.readBytes(file.bufferViews[file.images[0].bufferView].byteLength)], { type: file.images[0].mimeType })
+
 	const splitName = name.split(/(\/|\\)/)
 	const tmpDir = splitName.reduce((p, c, i, a) => i !== a.length - 1 ? p + c : p)
 	const dir = tmpDir === name ? '' : tmpDir
@@ -68,7 +73,7 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 	shader.setTexture(texture)
 
 	const image = new Image()
-	image.src = dir + file.images[0].uri
+	image.src = URL.createObjectURL(blob)
 	image.onload = () => {
 		gl.bindTexture(gl.TEXTURE_2D, texture)
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
@@ -79,11 +84,9 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 		gl.generateMipmap(gl.TEXTURE_2D)
 	}
 
-	const blob = await (await (await fetch(dir + file.buffers[0].uri)).blob()).arrayBuffer()
-	const model = new Uint8Array(blob)
 	const buffer = gl.createBuffer()
 	gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
-	gl.bufferData(gl.ARRAY_BUFFER, model, gl.STATIC_DRAW)
+	gl.bufferData(gl.ARRAY_BUFFER, file.buffers[0].uri, gl.STATIC_DRAW)
 
 	file.nodes.forEach((v, i) => {
 		const obj = new Node()
@@ -123,6 +126,7 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 			offset: file.bufferViews[positionBufferView].byteOffset,
 			size: file.bufferViews[positionBufferView].byteLength,
 		}
+		console.log(file.bufferViews[positionBufferView].byteLength)
 		obj.uv = {
 			id: buffer,
 			count: file.accessors[texcoord].count,
