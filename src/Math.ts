@@ -2,6 +2,7 @@ export class Vec3 {
 	private x: number
 	private y: number
 	private z: number
+
 	constructor(x = 0, y = 0, z = 0) {
 		this.x = x
 		this.y = y
@@ -24,45 +25,29 @@ export class Vec3 {
 		return new Vec3(this.x, this.y, this.z)
 	}
 
-	add(n: Vec3 | number): Vec3 {
-		if (typeof n === 'number')
-			return new Vec3(this.x + n, this.y + n, this.z + n)
-		if (n instanceof Vec3)
-			return new Vec3(this.x + n.x, this.y + n.y, this.z + n.z)
+	add(v: Vec3): Vec3 {
+		return new Vec3(this.x + v.x, this.y + v.y, this.z + v.z)
 	}
 
-	subtract(n: Vec3 | number): Vec3 {
-		if (typeof n === 'number')
-			return new Vec3(this.x - n, this.y - n, this.z - n)
-		if (n instanceof Vec3)
-			return new Vec3(this.x - n.x, this.y - n.y, this.z - n.z)
+	subtract(v: Vec3): Vec3 {
+		return new Vec3(this.x - v.x, this.y - v.y, this.z - v.z)
 	}
 
-	multiply(n: Vec3 | number): Vec3 {
-		if (typeof n === 'number')
-			return new Vec3(this.x * n, this.y * n, this.z * n)
-		if (n instanceof Vec3)
-			return new Vec3(this.x * n.x, this.y * n.y, this.z * n.z)
+	multiply(v: Vec3): Vec3 {
+		return new Vec3(this.x * v.x, this.y * v.y, this.z * v.z)
 	}
 
-	division(n: Vec3 | number): Vec3 {
-		if (typeof n === 'number')
-			return new Vec3(this.x / n, this.y / n, this.z / n)
-		if (n instanceof Vec3)
-			return new Vec3(this.x / n.x, this.y / n.y, this.z / n.z)
+	division(v: Vec3): Vec3 {
+		return new Vec3(this.x / v.x, this.y / v.y, this.z / v.z)
 
 	}
 
-	equal(n: Vec3, margin: number): boolean {
-		const dx = this.x - n.x
-		const dy = this.y - n.y
-		const dz = this.z - n.z
+	equal(v: Vec3, margin: number): boolean {
+		const dx = this.x - v.x
+		const dy = this.y - v.y
+		const dz = this.z - v.z
 		const distance = Math.sqrt(dx * dx + dy * dy + dz * dz)
-
-		if (distance < margin) {
-			return true
-		}
-		return false
+		return distance < margin
 	}
 
 	directionAngle(angle: number): Vec3 {
@@ -81,26 +66,6 @@ export class Vec3 {
 	dot(v: Vec3): number {
 		const tmp = this.multiply(v)
 		return tmp.x + tmp.y + tmp.z
-	}
-
-	normalize(): Vec3 {
-		const v = new Vec3()
-		const length = Math.sqrt(this.dot(this))
-		// make sure we don't divide by 0.
-		if (length > 0.00001) {
-			v.x = this.x / length
-			v.y = this.y / length
-			v.z = this.z / length
-		}
-		return v
-	}
-
-	slerp(end: Vec3, percent: number): Vec3 {
-		const dot = this.dot(end)
-		clamp(dot, -1.0, 1.0)
-		const theta = Math.acos(dot) * percent
-		const relativeVec = end.subtract(this).multiply(dot).normalize()
-		return this.multiply(Math.cos(theta)).add(relativeVec.multiply(Math.sin(theta)))
 	}
 }
 
@@ -203,8 +168,8 @@ export class Mat4 {
 
 		this.tmpIdentity()
 		this.tmp[0] = c
-		this.tmp[2] = s
-		this.tmp[8] = -s
+		this.tmp[2] = -s
+		this.tmp[8] = s
 		this.tmp[10] = c
 
 		this.multiply(this.mat, this.tmp)
