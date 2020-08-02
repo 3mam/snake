@@ -126,7 +126,6 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 			offset: file.bufferViews[positionBufferView].byteOffset,
 			size: file.bufferViews[positionBufferView].byteLength,
 		}
-		console.log(file.bufferViews[positionBufferView].byteLength)
 		obj.uv = {
 			id: buffer,
 			count: file.accessors[texcoord].count,
