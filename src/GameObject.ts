@@ -1,5 +1,6 @@
 import { Vec3, Mat4, angleToRadiant } from './Math'
 import { Node } from './Node'
+import { Box } from './Collision'
 
 export enum EDirection {
 	up,
@@ -40,10 +41,15 @@ export class GameObject {
 		this.view = new Mat4
 		this.visible = visible
 		this.tracePosition = {
-			start: 7,
+			start: 8,
 			end: 0,
-			gap: 7,
+			gap: 8,
 		}
+
+		node.color.g = 0
+		node.color.r = 0
+		node.color.b = 1
+		node.color.a = 0.5
 
 		this.trace.fill({ position: this.position.add(new Vec3(1, 1, 1)), direction: this.rotate })
 	}
@@ -55,6 +61,10 @@ export class GameObject {
 			}
 		}
 		return false
+	}
+
+	collisionWithWall(wall: Box): boolean {
+		return this.visible ? wall.collisionToVec3(this.position) : false
 	}
 
 	show() {
