@@ -6,6 +6,7 @@ import { Camera } from './Camera'
 import { Engine } from './Engine'
 import { GameObject, EDirection } from './GameObject'
 import { canvasResize } from './gl'
+import { Box } from './Collision'
 
 class Counter {
 	dir: number
@@ -99,6 +100,7 @@ window.onload = () => {
 		snakeSize: number
 		pos2D: Vec2in1D
 		screenAngle: number
+		wall: Box
 
 		constructor() {
 			super()
@@ -221,6 +223,8 @@ window.onload = () => {
 			const random = getRandomInt(0, this.arenaSpawnPoint.length)
 			this.up = new GameObject(model.get('up'), new Vec3(this.arenaSpawnPoint[random].valueX(), this.arenaSpawnPoint[random].valueY()))
 			this.snakeSize = 1
+
+			this.wall = new Box(0, 0, 4, 4)
 		}
 
 		camera(zoom: number) {
@@ -237,14 +241,13 @@ window.onload = () => {
 			this.head.lookDirection(this.direction)
 			this.head.move(this.speed * delta)
 
-
 			this.midleSnakeNode.forEach((m, i) => {
 				const parentLastState = m.callParent().lastPosition()
 				m.changeCurrentPosition(parentLastState.position)
 				m.rotateAt(parentLastState.direction)
 				this.snakeSize > i ? m.show() : m.hide()
 				m.update()
-				if (this.head.collisionWithObject(m, 0.03)) {
+				if (this.head.collisionWithObject(m, 0.03) || !this.head.collisionWithWall(this.wall)) {
 					this.speed = 0
 				}
 			})
