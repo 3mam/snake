@@ -1,7 +1,7 @@
 import './style.css'
 import './index.html'
 import { loadNode, Node } from './Node'
-import { Mat4, Vec3, getRandomInt, angleToRadiant } from './Math'
+import { Mat4, Vec3, getRandomInt } from './Math'
 import { Camera } from './Camera'
 import { Engine } from './Engine'
 import { GameObject, EDirection } from './GameObject'
@@ -195,7 +195,7 @@ window.onload = () => {
 				}
 			}
 			//this.arena.createInstance(area)
-			this.arena.translate(new Vec3((width / 2) * 0.06, (height / 2) * 0.06, 0))
+			this.arena.view.translate(new Vec3((width / 2) * 0.06, (height / 2) * 0.06, 0))
 			this.speed = 0.9
 
 			this.pos2D.x = width / 2
@@ -224,7 +224,13 @@ window.onload = () => {
 			this.up = new GameObject(model.get('up'), new Vec3(this.arenaSpawnPoint[random].valueX(), this.arenaSpawnPoint[random].valueY()))
 			this.snakeSize = 1
 
-			this.wall = new Box(0, 0, 4, 4)
+			this.head.setColor(0, 0, 1, 0.5)
+			this.midleSnakeNode[0].setColor(0, 0, 1, 0.5)
+			this.tail.setColor(0, 0, 1, 0.5)
+			this.up.setColor(1, 1, 1, 0.5)
+			this.arena.color = { r: 0.2, g: 0.2, b: 0.2, a: 1 }
+
+			this.wall = new Box(0, 0, 3.95, 3.95)
 		}
 
 		camera(zoom: number) {
