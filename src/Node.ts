@@ -5,7 +5,8 @@ import { Mat4, Vec3 } from './Math'
 import { currentCamera } from './Camera'
 import { BinaryReader } from './BinaryReader'
 
-export class Node extends Mat4 {
+export class Node {
+	view: Mat4
 	texture: WebGLTexture
 	vertex: BufferData
 	uv: BufferData
@@ -19,12 +20,12 @@ export class Node extends Mat4 {
 	}
 
 	constructor() {
-		super()
 		this.origin = {
 			translation: new Vec3,
 			scale: new Vec3,
 			rotate: new Vec3,
 		}
+		this.view = new Mat4
 	}
 
 	createInstance(mat4: Mat4[]) {
@@ -46,7 +47,7 @@ export class Node extends Mat4 {
 
 	render() {
 		this.shader.setTexture(this.texture)
-		this.shader.setViewport(this)
+		this.shader.setViewport(this.view)
 		this.shader.setCamera(currentCamera)
 		this.shader.setColor(this.color)
 		this.shader.setVertex(this.vertex)
@@ -92,7 +93,7 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 		const obj = new Node()
 		obj.color = { r: 1, g: 1, b: 1, a: 1 }
 		obj.shader = shader
-		obj.shader.setViewport(obj)
+		obj.shader.setViewport(obj.view)
 		obj.shader.setColor(obj.color)
 
 		obj.texture = texture
