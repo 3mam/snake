@@ -1,7 +1,6 @@
 import { Vec3, Mat4, angleToRadiant } from './Math'
 import { Node } from './Node'
 import { Box } from './Collision'
-import { Color } from './Shader'
 
 export enum EDirection {
 	up,
@@ -51,7 +50,7 @@ export class GameObject {
 	}
 
 	setColor(r: number, g: number, b: number, a: number) {
-		this.node.color = { r, g, b, a }
+		this.node.color.setRGBA(r, g, b, a)
 	}
 
 	collisionWithObject(o: GameObject, margin: number): boolean {

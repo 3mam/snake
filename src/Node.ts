@@ -1,9 +1,10 @@
 import { gl } from './gl'
-import { Shader, Color, BufferData } from './Shader'
+import { Shader, BufferData } from './Shader'
 import { glbLoad } from './glTF'
 import { Mat4, Vec3 } from './Math'
 import { currentCamera } from './Camera'
 import { BinaryReader } from './BinaryReader'
+import Color from './Color'
 
 export class Node {
 	view: Mat4
@@ -90,8 +91,8 @@ export async function loadNode(name: string): Promise<Map<string, Node>> {
 	gl.bufferData(gl.ARRAY_BUFFER, file.buffers[0].uri, gl.STATIC_DRAW)
 
 	file.nodes.forEach((v, i) => {
-		const obj = new Node()
-		obj.color = { r: 1, g: 1, b: 1, a: 1 }
+		const obj = new Node
+		obj.color = new Color
 		obj.shader = shader
 		obj.shader.setViewport(obj.view)
 		obj.shader.setColor(obj.color)

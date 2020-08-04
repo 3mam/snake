@@ -7,6 +7,7 @@ import { Engine } from './Engine'
 import { GameObject, EDirection } from './GameObject'
 import { canvasResize } from './gl'
 import { Box } from './Collision'
+import Color from './Color'
 
 class Counter {
 	dir: number
@@ -228,7 +229,7 @@ window.onload = () => {
 			this.midleSnakeNode[0].setColor(0, 0, 1, 0.5)
 			this.tail.setColor(0, 0, 1, 0.5)
 			this.up.setColor(1, 1, 1, 0.5)
-			this.arena.color = { r: 0.2, g: 0.2, b: 0.2, a: 1 }
+			this.arena.color.setRGBA(0.2, 0.2, 0.2, 1)
 
 			this.wall = new Box(0, 0, 3.95, 3.95)
 		}
