@@ -8,7 +8,9 @@
 		"start": "webpack-dev-server --mode development --open http://localhost:8080 --hot --host 0.0.0.0",
 		"build": "webpack --mode production"
 	},
-	"keywords": ["snake"],
+	"keywords": [
+		"snake"
+	],
 	"author": "Konrad Chmielecki",
 	"license": "",
 	"devDependencies": {
@@ -19,8 +21,8 @@
 		"source-map-loader": "^0.2.4",
 		"style-loader": "^1.1.3",
 		"ts-loader": "^7.0.5",
-		"typescript": "^3.9.5",
-		"webpack": "^4.43.0",
+		"typescript": "^3.9.7",
+		"webpack": "^4.44.1",
 		"webpack-cli": "^3.3.12",
 		"webpack-dev-server": "^3.11.0"
 	}
