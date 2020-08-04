@@ -28,7 +28,7 @@ export type BufferData = {
 	size: number
 }
 
-export class Shader {
+export default class Shader {
 	private program: WebGLProgram
 	private varList: Map<string, ShaderVar>
 	private viewport: Mat4

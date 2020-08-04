@@ -1,7 +1,7 @@
 import { angleToRadiant } from './Math'
 import Mat4 from './Mat4'
 import Vec3 from './Vec3'
-import { Node } from './Node'
+import Node from './Node'
 import BoxCollision from './BoxCollision'
 
 export enum EDirection {
@@ -11,7 +11,7 @@ export enum EDirection {
 	right,
 }
 
-export class GameObject {
+export default class GameObject {
 	private node: Node
 	private view: Mat4
 	private position: Vec3

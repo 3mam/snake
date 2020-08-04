@@ -1,13 +1,13 @@
 import { gl } from './gl'
-import { Shader, BufferData } from './Shader'
+import Shader, { BufferData } from './Shader'
 import { glbLoad } from './glTF'
 import Mat4 from './Mat4'
 import Vec3 from './Vec3'
 import { currentCamera } from './Camera'
-import { BinaryReader } from './BinaryReader'
+import BinaryReader from './BinaryReader'
 import Color from './Color'
 
-export class Node {
+export default class Node {
 	view: Mat4
 	texture: WebGLTexture
 	vertex: BufferData

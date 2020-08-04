@@ -1,4 +1,4 @@
-export class BinaryReader {
+export default class BinaryReader {
 	private array: Uint8Array
 	private offset: number
 
