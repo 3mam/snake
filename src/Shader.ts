@@ -1,6 +1,7 @@
 import { Mat4 } from './Math'
 import { gl, createShader, createProgram, canvas } from './gl'
 import { Camera } from './Camera'
+import Color from './Color'
 
 enum Type {
 	Vertex,
@@ -18,13 +19,6 @@ type ShaderVar = {
 	handle: number | WebGLUniformLocation
 	type: Type
 	var: any
-}
-
-export type Color = {
-	r: number
-	g: number
-	b: number
-	a: number
 }
 
 export type BufferData = {
