@@ -8,7 +8,7 @@ export enum CameraType {
 	None,
 }
 
-export class Camera extends Mat4 {
+export default class Camera extends Mat4 {
 	private fov: number
 	private type: CameraType
 	private distance: {
