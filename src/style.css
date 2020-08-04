@@ -15,12 +15,14 @@
 	width: 5vmax;
 	height: 5vmax;
 	background: red;
+	visibility: hidden;
 }
 
 :fullscreen #fullScreen {
 	width: 5vmax;
 	height: 5vmax;
 	background: greenyellow;
+	visibility: visible;
 }
 
 .left {
@@ -60,9 +62,24 @@
 }
 
 .button {
-	width: 6vmax;
-	height: 6vmax;
+	width: 7vmax;
+	height: 7vmax;
 	background: rgba(255, 255, 255, 0.219);
+}
+
+.startEnd {
+	background-color: rgb(59, 168, 114);
+	position: fixed;
+	width: 30vmax;
+	height: 10vmax;
+	text-align: center;
+	font-size: 9vmax;
+}
+
+#restart {
+	background-color: rgb(59, 168, 114);
+	text-align: center;
+	font-size: 5vmax;
 }
 
 @media screen and (orientation: portrait) {
@@ -70,6 +87,12 @@
 		position: fixed;
 		left: 39%;
 		bottom: 35%;
+	}
+
+	.startEnd {
+		left: 25%;
+		bottom: 55%;
+		font-size: 9vmax;
 	}
 }
 
@@ -79,4 +102,13 @@
 		right: 30%;
 		top: 30%;
 	}
+
+	.startEnd {
+		left: 35%;
+		bottom: 50%;
+	}
+}
+
+#end {
+	visibility: hidden;
 }

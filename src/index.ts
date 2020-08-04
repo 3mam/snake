@@ -9,7 +9,6 @@ import Engine from './Engine'
 import GameObject, { EDirection } from './GameObject'
 import { canvasResize } from './gl'
 import BoxCollision from './BoxCollision'
-import Color from './Color'
 
 class Counter {
 	dir: number
@@ -104,6 +103,8 @@ window.onload = () => {
 		pos2D: Vec2in1D
 		screenAngle: number
 		wall: BoxCollision
+		start: number
+		pos: Vec3
 
 		constructor() {
 			super()
@@ -111,6 +112,7 @@ window.onload = () => {
 
 		async init() {
 			canvasResize()
+			this.start = 0
 			this.screenAngle = window.screen.orientation.angle
 			const width = 64
 			const height = 64
@@ -137,6 +139,27 @@ window.onload = () => {
 			document.querySelector('#input').addEventListener('click', (ev) => {
 				if (ev.target['id'] === 'fullScreen') {
 					toggleFullScreen()
+					this.speed = 0
+					document.getElementById('end').style.visibility = 'visible'
+				}
+
+				if (ev.target['id'] === 'start') {
+					toggleFullScreen()
+					document.getElementById('start').style.visibility = 'hidden'
+					this.start = 22
+				}
+
+				if (ev.target['id'] === 'restart') {
+					document.getElementById('end').style.visibility = 'hidden'
+					this.speed = 0.9
+					this.direction = EDirection.up
+					this.head.changeCurrentPosition(this.pos)
+					this.snakeSize = 1
+					this.tail.changeParent(this.midleSnakeNode[0])
+					this.midleSnakeInstance.forEach(v => v.scale(new Vec3(0, 0, 0)))
+					midle.createInstance(this.midleSnakeInstance)
+					document.documentElement.requestFullscreen()
+
 				}
 			})
 
@@ -156,6 +179,7 @@ window.onload = () => {
 				if (ev.target['id'] === 'down' && this.direction !== EDirection.up && this.direction !== EDirection.down) {
 					this.direction = EDirection.down
 				}
+
 			})
 
 			window.addEventListener('keydown', (ev) => {
@@ -186,7 +210,7 @@ window.onload = () => {
 			this.arena = model.get('arena')
 			this.cam = new Camera('main')
 			this.cam.useAsCurrent()
-
+			this.direction = EDirection.up
 			//const area = new Array(3)
 			this.arenaSpawnPoint = new Array(width * height)
 			for (let y = 0; y < height; y++) {
@@ -204,25 +228,25 @@ window.onload = () => {
 			this.pos2D.x = width / 2
 			this.pos2D.y = 0
 
-			let pos = this.arenaSpawnPoint[this.pos2D.position]
-			pos = pos.add(new Vec3(0, 0, 0))
-			this.direction = EDirection.up
-			const snakeLength = 50
+			this.pos = this.arenaSpawnPoint[this.pos2D.position]
+			this.pos = this.pos.add(new Vec3(0, 0, 0))
+
+			const snakeLength = 500
 			this.midleSnakeInstance = new Array(snakeLength)
 			this.midleSnakeNode = new Array(snakeLength)
-			this.head = new GameObject(model.get('head'), pos)
+			this.head = new GameObject(model.get('head'), this.pos)
 			let midle = model.get('midle')
 
 			for (let i = 0; i < snakeLength; i++) {
 				this.midleSnakeInstance[i] = new Mat4
 				this.midleSnakeInstance[i].scale(new Vec3(0, 0, 0))
 
-				this.midleSnakeNode[i] = new GameObject(midle, pos, i == 0 ? true : false, i == 0 ? this.head : this.midleSnakeNode[i - 1], i)
+				this.midleSnakeNode[i] = new GameObject(midle, this.pos, i == 0 ? true : false, i == 0 ? this.head : this.midleSnakeNode[i - 1], i)
 			}
 			midle.createInstance(this.midleSnakeInstance)
 
 			this.head.lookDirection(EDirection.up)
-			this.tail = new GameObject(model.get('tail'), pos, true, this.midleSnakeNode[0])
+			this.tail = new GameObject(model.get('tail'), this.pos, true, this.midleSnakeNode[0])
 			const random = getRandomInt(0, this.arenaSpawnPoint.length)
 			this.up = new GameObject(model.get('up'), new Vec3(this.arenaSpawnPoint[random].valueX(), this.arenaSpawnPoint[random].valueY()))
 			this.snakeSize = 1
@@ -242,6 +266,17 @@ window.onload = () => {
 		}
 
 		update(delta) {
+			switch (this.start) {
+				case 20: this.start = 21
+					break
+				case 21:
+					return
+					break
+				case 22:
+					break
+				default: this.start++
+			}
+
 			this.cam.identity()
 			this.cam.rotateX(0.9)
 
@@ -258,6 +293,7 @@ window.onload = () => {
 				m.update()
 				if (this.head.collisionWithObject(m, 0.03) || !this.head.collisionWithWall(this.wall)) {
 					this.speed = 0
+					document.getElementById('end').style.visibility = 'visible'
 				}
 			})
 
@@ -276,6 +312,7 @@ window.onload = () => {
 			}
 
 			this.up.update()
+
 		}
 
 		render(delta) {
