@@ -1,6 +1,8 @@
-import { Vec3, Mat4, angleToRadiant } from './Math'
+import { angleToRadiant } from './Math'
+import Mat4 from './Mat4'
+import Vec3 from './Vec3'
 import { Node } from './Node'
-import { Box } from './Collision'
+import BoxCollision from './BoxCollision'
 
 export enum EDirection {
 	up,
@@ -62,7 +64,7 @@ export class GameObject {
 		return false
 	}
 
-	collisionWithWall(wall: Box): boolean {
+	collisionWithWall(wall: BoxCollision): boolean {
 		return this.visible ? wall.collisionToVec3(this.position) : false
 	}
 

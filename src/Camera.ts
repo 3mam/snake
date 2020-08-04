@@ -1,4 +1,5 @@
-import { Mat4, Vec3 } from './Math'
+import Mat4 from './Mat4'
+import Vec3 from './Vec3'
 import { canvas } from './gl'
 
 export enum CameraType {

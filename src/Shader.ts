@@ -1,4 +1,4 @@
-import { Mat4 } from './Math'
+import Mat4 from './Mat4'
 import { gl, createShader, createProgram, canvas } from './gl'
 import { Camera } from './Camera'
 import Color from './Color'

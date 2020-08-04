@@ -1,6 +1,6 @@
 import { gl, glInit, canvas, canvasResize } from './gl'
 
-export abstract class Engine {
+export default abstract class Engine {
 	abstract init(): void
 	abstract update(step: number): void
 	abstract render(delta: number): void

@@ -1,12 +1,14 @@
 import './style.css'
 import './index.html'
 import { loadNode, Node } from './Node'
-import { Mat4, Vec3, getRandomInt } from './Math'
+import { getRandomInt } from './Math'
+import Mat4 from './Mat4'
+import Vec3 from './Vec3'
 import { Camera } from './Camera'
-import { Engine } from './Engine'
+import Engine from './Engine'
 import { GameObject, EDirection } from './GameObject'
 import { canvasResize } from './gl'
-import { Box } from './Collision'
+import BoxCollision from './BoxCollision'
 import Color from './Color'
 
 class Counter {
@@ -101,7 +103,7 @@ window.onload = () => {
 		snakeSize: number
 		pos2D: Vec2in1D
 		screenAngle: number
-		wall: Box
+		wall: BoxCollision
 
 		constructor() {
 			super()
@@ -231,7 +233,7 @@ window.onload = () => {
 			this.up.setColor(1, 1, 1, 0.5)
 			this.arena.color.setRGBA(0.2, 0.2, 0.2, 1)
 
-			this.wall = new Box(0, 0, 3.95, 3.95)
+			this.wall = new BoxCollision(0, 0, 3.95, 3.95)
 		}
 
 		camera(zoom: number) {
