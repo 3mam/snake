@@ -79,15 +79,26 @@ class Vec2in1D {
 }
 
 function dpadVisibleSwitch() {
-	let dpad = document.getElementById('dpad').style
-	if (dpad.visibility === 'visible')
-		dpad.visibility = 'hidden'
-	else
-		dpad.visibility = 'visible'
+	const dpad = document.getElementById('dpad').style
+	dpad.visibility === 'visible'
+		? dpad.visibility = 'hidden'
+		: dpad.visibility = 'visible'
+}
+
+function isMobile() {
+	const match = window.matchMedia
+	return match ? match("(pointer:coarse)").matches : false
+}
+
+function toggleFullScreen() {
+	!document.fullscreenElement
+		? document.documentElement.requestFullscreen()
+		: document.exitFullscreen
+			? document.exitFullscreen()
+			: null
 }
 
 window.onload = () => {
-
 	class Game extends Engine {
 		head: GameObject
 		up: GameObject
@@ -118,16 +129,6 @@ window.onload = () => {
 			const height = 64
 			this.pos2D = new Vec2in1D(width, height, width / 2, height / 2)
 
-			const toggleFullScreen = () => {
-				if (!document.fullscreenElement) {
-					document.documentElement.requestFullscreen()
-				} else {
-					if (document.exitFullscreen) {
-						document.exitFullscreen()
-					}
-				}
-			}
-
 			window.addEventListener('fullscreenchange', (ev) => {
 				dpadVisibleSwitch()
 			})
@@ -144,7 +145,7 @@ window.onload = () => {
 				}
 
 				if (ev.target['id'] === 'start') {
-					toggleFullScreen()
+					isMobile() ? toggleFullScreen() : null
 					document.getElementById('start').style.visibility = 'hidden'
 					this.start = 22
 				}
@@ -261,8 +262,8 @@ window.onload = () => {
 		}
 
 		camera(zoom: number) {
-			this.cam.position(new Vec3(0, 2, -2).subtract(this.head.currentPosition().multiply(new Vec3(zoom, zoom, zoom))))
-			this.cam.zoom(zoom)
+
+
 		}
 
 		update(delta) {
@@ -271,16 +272,20 @@ window.onload = () => {
 					break
 				case 21:
 					return
-					break
 				case 22:
 					break
 				default: this.start++
 			}
 
 			this.cam.identity()
-			this.cam.rotateX(0.9)
-
-			this.screenAngle != 0 ? this.camera(1.5) : this.camera(1)
+			this.cam.rotateX(0.2)
+			if (this.screenAngle != 0) {
+				this.cam.position(new Vec3(-2.1, -0.8, -2))
+				this.cam.zoom(0.74)
+			} else {
+				this.cam.position(new Vec3(-0.75, 0.1, -2))
+				this.cam.zoom(0.39)
+			}
 
 			this.head.lookDirection(this.direction)
 			this.head.move(this.speed * delta)
