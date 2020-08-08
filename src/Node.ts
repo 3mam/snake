@@ -5,9 +5,9 @@ import Mat4 from './Mat4'
 import Vec3 from './Vec3'
 import { currentCamera } from './Camera'
 import BinaryReader from './BinaryReader'
-import Color from './Color'
+import Color, { IColor } from './Color'
 
-export default class Node {
+export default class Node implements IColor {
 	view: Mat4
 	texture: WebGLTexture
 	vertex: BufferData
@@ -28,6 +28,10 @@ export default class Node {
 			rotate: new Vec3,
 		}
 		this.view = new Mat4
+	}
+
+	setColor(c: Color) {
+		this.color.setRGBA(c.valueR(), c.valueG(), c.valueB(), c.valueA())
 	}
 
 	createInstance(mat4: Mat4[]) {

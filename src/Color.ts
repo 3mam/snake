@@ -1,8 +1,8 @@
 export default class Color {
-	r: number
-	g: number
-	b: number
-	a: number
+	private r: number
+	private g: number
+	private b: number
+	private a: number
 
 	constructor(r = 1, g = 1, b = 1, a = 1) {
 		this.r = r
@@ -33,4 +33,8 @@ export default class Color {
 		return this.a
 	}
 
+}
+
+export interface IColor {
+	setColor(c: Color): void
 }

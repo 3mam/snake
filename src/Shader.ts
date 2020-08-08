@@ -96,7 +96,7 @@ export default class Shader {
 	}
 
 	setColor(color: Color) {
-		this.varList.get('COLOR').var = [color.r, color.g, color.b, color.a]
+		this.varList.get('COLOR').var = [color.valueR(), color.valueG(), color.valueB(), color.valueA()]
 	}
 
 	setViewport(view: Mat4) {

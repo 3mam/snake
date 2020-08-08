@@ -3,6 +3,7 @@ import Mat4 from './Mat4'
 import Vec3 from './Vec3'
 import Node from './Node'
 import BoxCollision from './BoxCollision'
+import Color, { IColor } from './Color'
 
 export enum EDirection {
 	up,
@@ -11,7 +12,7 @@ export enum EDirection {
 	right,
 }
 
-export default class GameObject {
+export default class GameObject implements IColor {
 	private node: Node
 	private view: Mat4
 	private position: Vec3
@@ -51,8 +52,8 @@ export default class GameObject {
 		this.trace.fill({ position: this.position.add(new Vec3(1, 1, 1)), direction: this.rotate })
 	}
 
-	setColor(r: number, g: number, b: number, a: number) {
-		this.node.color.setRGBA(r, g, b, a)
+	setColor(c: Color) {
+		this.node.setColor(c)
 	}
 
 	collisionWithObject(o: GameObject, margin: number): boolean {

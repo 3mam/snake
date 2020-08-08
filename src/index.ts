@@ -9,6 +9,7 @@ import Engine from './Engine'
 import GameObject, { EDirection } from './GameObject'
 import { canvasResize } from './gl'
 import BoxCollision from './BoxCollision'
+import Color from './Color'
 
 class Counter {
 	dir: number
@@ -252,11 +253,11 @@ window.onload = () => {
 			this.up = new GameObject(model.get('up'), new Vec3(this.arenaSpawnPoint[random].valueX(), this.arenaSpawnPoint[random].valueY()))
 			this.snakeSize = 1
 
-			this.head.setColor(0, 0, 1, 0.5)
-			this.midleSnakeNode[0].setColor(0, 0, 1, 0.5)
-			this.tail.setColor(0, 0, 1, 0.5)
-			this.up.setColor(1, 1, 1, 0.5)
-			this.arena.color.setRGBA(0.2, 0.2, 0.2, 1)
+			this.head.setColor(new Color(0, 0, 1, 0.5))
+			this.midleSnakeNode[0].setColor(new Color(0, 0, 1, 0.5))
+			this.tail.setColor(new Color(0, 0, 1, 0.5))
+			this.up.setColor(new Color(1, 1, 1, 0.5))
+			this.arena.setColor(new Color(0.2, 0.2, 0.2, 1))
 
 			this.wall = new BoxCollision(0, 0, 3.95, 3.95)
 		}
