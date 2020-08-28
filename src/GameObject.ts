@@ -85,7 +85,7 @@ export default class GameObject implements IColor {
 		return this.position
 	}
 
-	changeCurrentPosition(position: Vec3) {
+	changePosition(position: Vec3) {
 		this.position = position
 	}
 

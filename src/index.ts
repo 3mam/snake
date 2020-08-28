@@ -53,7 +53,7 @@ class Vec2in1D {
 
 	get position() {
 		if (this.whxy[0] > this.whxy[2] && this.whxy[2] >= 0 && this.whxy[1] > this.whxy[3] && this.whxy[3] >= 0)
-			return ((this.whxy[2] * this.whxy[0]) + this.whxy[3])
+			return ((this.whxy[3] * this.whxy[0]) + this.whxy[2])
 		else
 			return 0
 	}
@@ -155,7 +155,7 @@ window.onload = () => {
 					document.getElementById('end').style.visibility = 'hidden'
 					this.speed = 0.9
 					this.direction = EDirection.up
-					this.head.changeCurrentPosition(this.pos)
+					this.head.changePosition(this.pos)
 					this.snakeSize = 1
 					this.tail.changeParent(this.midleSnakeNode[0])
 					this.midleSnakeInstance.forEach(v => v.scale(new Vec3(0, 0, 0)))
@@ -293,7 +293,7 @@ window.onload = () => {
 
 			this.midleSnakeNode.forEach((m, i) => {
 				const parentLastState = m.callParent().lastPosition()
-				m.changeCurrentPosition(parentLastState.position)
+				m.changePosition(parentLastState.position)
 				m.rotateAt(parentLastState.direction)
 				this.snakeSize > i ? m.show() : m.hide()
 				m.update()
@@ -304,7 +304,7 @@ window.onload = () => {
 			})
 
 			const parentLastState = this.tail.callParent().lastPosition()
-			this.tail.changeCurrentPosition(parentLastState.position)
+			this.tail.changePosition(parentLastState.position)
 			this.tail.rotateAt(parentLastState.direction)
 			this.tail.update()
 
@@ -312,9 +312,10 @@ window.onload = () => {
 
 			if (this.head.collisionWithObject(this.up, 0.1)) {
 				const random = getRandomInt(0, this.arenaSpawnPoint.length)
-				this.up.changeCurrentPosition(this.arenaSpawnPoint[random])
+				this.up.changePosition(this.arenaSpawnPoint[random])
 				this.tail.changeParent(this.midleSnakeNode[this.snakeSize])
 				this.snakeSize++
+				window.navigator.vibrate(100)
 			}
 
 			this.up.update()
