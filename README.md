@@ -2,7 +2,10 @@
 
 I wanted know how painful task will be create 3d game from scratch.
 
-Demo 
+Demo
+<br>
 https://3mam.github.io/snake_alpha3/
+<br>
 https://3mam.github.io/snake_alpha4/
-control WSAD on keyboard or touch screen.
+<br>
+Control WSAD on keyboard or touch screen.
