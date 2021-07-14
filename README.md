@@ -2,13 +2,17 @@
 
 I wanted know how painful task will be create 3d game from scratch.
 
-Demo
+Tech demo
 <br>
-First alpha
-https://3mam.github.io/alpha1/
+https://3mam.github.io/snake/tech
 <br>
-https://3mam.github.io/snake_alpha3/
+Alpha
 <br>
-https://3mam.github.io/snake_alpha4/
+https://3mam.github.io/snake/alpha1/
+<br>
+https://3mam.github.io/snake/alpha3/
+<br>
+https://3mam.github.io/snake/alpha4/
+<br>
 <br>
 Control WSAD on keyboard or touch screen.
